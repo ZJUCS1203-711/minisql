@@ -114,8 +114,8 @@ void BufferManager::init_block(blockNode &block)
  */
 fileNode* BufferManager::getFile(const char * fileName, bool if_pin)
 {
-    blockNode * btmp;
-    fileNode * ftmp;
+    blockNode * btmp = NULL;
+    fileNode * ftmp = NULL;
     if(fileHead != NULL)
     {
         for(ftmp = fileHead;ftmp != NULL;ftmp = ftmp->nextFile)
@@ -186,7 +186,7 @@ fileNode* BufferManager::getFile(const char * fileName, bool if_pin)
 blockNode* BufferManager::getBlock(fileNode * file,blockNode *position, bool if_pin)
 {
     const char * fileName = file->fileName;
-    blockNode * btmp;
+    blockNode * btmp = NULL;
     if(total_block == 0)
     {
         btmp = &block_pool[0];
@@ -297,7 +297,7 @@ void BufferManager::writtenBackToDisk(const char* fileName,blockNode* block)
     }
     else // written back to the file
     {
-        FILE * fileHandle;
+        FILE * fileHandle = NULL;
         if((fileHandle = fopen(fileName, "rb+")) != NULL)
         {
             if(fseek(fileHandle, block->offsetNum*BLOCK_SIZE, 0) == 0)
