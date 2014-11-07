@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string>
 
-/*
+/**
  *  Constructor Function: allocate memories for the pools 
  *                        and init the variable values
  *
@@ -45,7 +45,7 @@ BufferManager::BufferManager():total_block(0),total_file(0),fileHead(NULL)
     }
 }
 
-/*
+/**
  *  Destructor Function: free memories of the pools
  *                        and write back the buffer content if required
  *
@@ -63,7 +63,7 @@ BufferManager::~BufferManager()
     }
 }
 
-/*
+/**
  * init the fileNode values
  *
  * @param fileNode&  the file your want to init
@@ -80,7 +80,7 @@ void BufferManager::init_file(fileNode &file)
     memset(file.fileName,0,MAX_FILE_NAME);
 }
 
-/*
+/**
  * init the blockNode values
  *
  * @param blockNode&  the block your want to init
@@ -101,7 +101,7 @@ void BufferManager::init_block(blockNode &block)
     memset(block.fileName,0,MAX_FILE_NAME);
 }
 
-/*
+/**
  *  Get a fileNode
  *  1.If the file is already in the list, return this fileNode
  *  2.If the file is not in the list, replace some fileNode, if required, to make more space
@@ -114,8 +114,8 @@ void BufferManager::init_block(blockNode &block)
  */
 fileNode* BufferManager::getFile(const char * fileName, bool if_pin)
 {
-    blockNode * btmp;
-    fileNode * ftmp;
+    blockNode * btmp = NULL;
+    fileNode * ftmp = NULL;
     if(fileHead != NULL)
     {
         for(ftmp = fileHead;ftmp != NULL;ftmp = ftmp->nextFile)
@@ -170,7 +170,7 @@ fileNode* BufferManager::getFile(const char * fileName, bool if_pin)
     return ftmp;
 }
 
-/*
+/**
  *  Get a block node
  *  1.If the block is already in the list, return this blockNode
  *  2.If the block is not in the list, replace some fileNode, using LRU replacement, if required, to make more space.
@@ -186,7 +186,7 @@ fileNode* BufferManager::getFile(const char * fileName, bool if_pin)
 blockNode* BufferManager::getBlock(fileNode * file,blockNode *position, bool if_pin)
 {
     const char * fileName = file->fileName;
-    blockNode * btmp;
+    blockNode * btmp = NULL;
     if(total_block == 0)
     {
         btmp = &block_pool[0];
@@ -251,6 +251,12 @@ blockNode* BufferManager::getBlock(fileNode * file,blockNode *position, bool if_
     else // the block will be the head of the list
     {
         btmp -> offsetNum = 0;
+        if(file->blockHead) // if the file has a wrong block head
+        {
+            file->blockHead -> preBlock = btmp;
+            btmp->nextBlock = file->blockHead;
+        }
+        file->blockHead = btmp;
     }
     set_pin(*btmp, if_pin);
     strcpy(btmp->fileName, fileName);
@@ -280,8 +286,8 @@ blockNode* BufferManager::getBlock(fileNode * file,blockNode *position, bool if_
     return btmp;
 }
 
-/*
- * Flush the block node to the disk
+/**
+ * Flush the block node to the disk, if the block is not dirty, do nothing.
  *
  * @param const char*  the file name
  * @param blockNode&  the block your want to flush
@@ -297,7 +303,7 @@ void BufferManager::writtenBackToDisk(const char* fileName,blockNode* block)
     }
     else // written back to the file
     {
-        FILE * fileHandle;
+        FILE * fileHandle = NULL;
         if((fileHandle = fopen(fileName, "rb+")) != NULL)
         {
             if(fseek(fileHandle, block->offsetNum*BLOCK_SIZE, 0) == 0)
@@ -324,7 +330,7 @@ void BufferManager::writtenBackToDisk(const char* fileName,blockNode* block)
     }
 }
 
-/*
+/**
  * Flush all block node in the list to the disk
  *
  * @return void
@@ -350,7 +356,7 @@ void BufferManager::writtenBackToDiskAll()
     }
 }
 
-/*
+/**
  * Get the next block node of the node inputed
  *
  * @param fileNode* the file you want to add a block
@@ -376,7 +382,7 @@ blockNode* BufferManager::getNextBlock(fileNode* file,blockNode* block)
     }
 }
 
-/*
+/**
  * Get the head block of the file
  *
  * @param fileNode*
@@ -386,12 +392,23 @@ blockNode* BufferManager::getNextBlock(fileNode* file,blockNode* block)
  */
 blockNode* BufferManager::getBlockHead(fileNode* file)
 {
-    blockNode* btmp = file->blockHead;
-    if(btmp == NULL) // If the file have no block head, get a new block node for it
+    blockNode* btmp = NULL;
+    if(file->blockHead != NULL)
+    {
+        if(file->blockHead->offsetNum == 0) //The right offset of the first block
+        {
+            btmp = file->blockHead;
+        }
+        else
+        {
+            btmp = getBlock(file, NULL);
+        }
+    }
+    else// If the file have no block head, get a new block node for it
     {
         btmp = getBlock(file,NULL);
-        file->blockHead = btmp;
     }
+    
     return btmp;
 }
 
@@ -407,7 +424,7 @@ void BufferManager::set_pin(fileNode &file,bool pin)
     file.pin = pin;
 }
 
-/*
+/**
  * Set the block a dirty node
  * Must call this function if modify the block node
  *
