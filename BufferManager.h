@@ -2,7 +2,7 @@
 //  BufferManager.h
 //  Minisql
 //
-//  Created by xuyuhao on 14/11/1.
+//  Created by xuyuhao on 14/11/1.  
 //  Copyright (c) 2014年 xuyuhao. All rights reserved.
 //
 
@@ -10,7 +10,6 @@
 #define __Minisql__BufferManager__
 #include "Minisql.h"
 #include <stdio.h>
-
 
 static int replaced_block = -1;
 
@@ -39,8 +38,8 @@ class BufferManager
         void set_pin(blockNode & block,bool pin);
         void set_pin(fileNode & file,bool pin);
     
-    blockNode* getNextBlock(fileNode * file,blockNode* block);
-    blockNode* getBlockHead(fileNode* file);
+        blockNode* getNextBlock(fileNode * file,blockNode* block);
+        blockNode* getBlockHead(fileNode* file);
 
 };
 
