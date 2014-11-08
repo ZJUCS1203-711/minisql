@@ -412,6 +412,32 @@ blockNode* BufferManager::getBlockHead(fileNode* file)
     return btmp;
 }
 
+/**
+ * Get the block of the file by offset number
+ *
+ * @param fileNode*
+ * @param int offsetNumber
+ *
+ * @return blockNode*
+ *
+ */
+blockNode* BufferManager::getBlockByOffset(fileNode* file, int offsetNumber)
+{
+    blockNode* btmp = NULL;
+    if(offsetNumber == 0) return getBlockHead(file);
+    else
+    {
+        btmp = getBlockHead(file);
+        while( offsetNumber > 0)
+        {
+            btmp = getNextBlock(file, btmp);
+            offsetNumber --;
+        }
+        return btmp;
+    }
+}
+
+
 void BufferManager::set_pin(blockNode &block,bool pin)
 {
     block.pin = pin;

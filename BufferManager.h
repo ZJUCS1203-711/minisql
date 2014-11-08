@@ -40,6 +40,7 @@ class BufferManager
     
         blockNode* getNextBlock(fileNode * file,blockNode* block);
         blockNode* getBlockHead(fileNode* file);
+        blockNode* getBlockByOffset(fileNode* file, int offestNumber);
 
 };
 
