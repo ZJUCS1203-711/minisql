@@ -28,7 +28,7 @@ class BufferManager
         void writtenBackToDiskAll();
         void writtenBackToDisk(const char* fileName,blockNode* block);
         void clean_dirty(blockNode &block);
-        int getUsingSize(blockNode* block);
+        size_t getUsingSize(blockNode* block);
     
     public:
         BufferManager();
