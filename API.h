@@ -13,7 +13,7 @@ class IndexManager{
 public:
     void indexCreate(string indexName, string tableName, string attributeName){return;}
     void dropIndex(string indexName){return;}
-    void indexValueInsert(string indexName, string value){return;}
+    void indexValueInsert(string indexName, string value, int blockOffset){return;}
     void indexValueGet(string indexName,string value, blockNode* block){return ;}
 };
 
@@ -99,17 +99,16 @@ public:
 	int attributeTypeGet(string tableName, vector<string>* attributeTypeVector);
     int attributeGet(string tableName, vector<Attribute>* attributeVector);
 
-    void indexValueInsert(string indexName, string value);
-    void recordIndexDelete(char* recordBegin,int recordSize, vector<Attribute>* attributeVector){}
+    void indexValueInsert(string indexName, string value, int blockOffset);
     
-    //输出 二叉树的一个节点（待修改）
-    //输入 索引名称,value
-    int indexBlockGet(string indexName, string value);
+    void recordIndexDelete(char* recordBegin,int recordSize, vector<Attribute>* attributeVector, int blockOffset);
+    void recordIndexInsert(char* recordBegin,int recordSize, vector<Attribute>* attributeVector, int blockOffset);
     
 private:
     int tableExist(string tableName);
     int indexNameListGet(string tableName, vector<string>* indexNameVector);
     string primaryIndexNameGet(string tableName);
+    void tableAttributePrint(vector<Attribute>* attributeVector);
 };
 
 struct int_t{

@@ -17,13 +17,14 @@ public:
     API *api;
     
     int recordAllShow(string tableName, vector<Condition>* conditionVector);
-    
     int recordBlockShow(string tableName, vector<Condition>* conditionVector, blockNode* block);
 
+    int recordAllFind(string tableName, vector<Condition>* conditionVector);
+    int recordBlockFind(string tableName, vector<Condition>* conditionVector, blockNode* block);
+    
     int recordInsert(string tableName, char* record, int recordSize);
     
     int recordAllDelete(string tableName, vector<Condition>* conditionVector);
-    
     int recordBlockDelete(string tableName,  vector<Condition>* conditionVector, blockNode* block);
 
     int indexDrop(string indexName);

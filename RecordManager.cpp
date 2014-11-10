@@ -97,15 +97,15 @@ int RecordManager::recordInsert(string tableName,char* record, int recordSize)
         {
             return -1;
         }
-        if (btmp->using_size <= BLOCK_SIZE - recordSize)
+        if (bm.get_usingSize(*btmp) <= bm.getBlockSize() - recordSize)
         {
             
             char* addressBegin;
-            addressBegin = btmp->address + btmp->using_size;
+            addressBegin = bm.get_content(*btmp) + bm.get_usingSize(*btmp);
             memcpy(addressBegin, record, recordSize);
 //            cout << "using_size_beign" << (int)btmp->using_size;
             
-            btmp->using_size += recordSize;
+            bm.set_usingSize(*btmp, bm.get_usingSize(*btmp) + recordSize);
 //            cout << "recordSize" << recordSize << ";using_size";
 //            cout << (int)btmp->using_size;
             bm.set_dirty(*btmp);
@@ -141,6 +141,9 @@ int RecordManager::recordAllShow(string tableName, vector<Condition>* conditionV
         }
         if (btmp->ifbottom)
         {
+            int recordBlockNum = recordBlockShow(tableName, conditionVector, btmp);
+            count += recordBlockNum;
+            btmp = bm.getNextBlock(ftmp, btmp);
             return count;
         }
         else
@@ -171,13 +174,13 @@ int RecordManager::recordBlockShow(string tableName, vector<Condition>* conditio
     }
     int count = 0;
     
-    char* recordBegin = block->address;
+    char* recordBegin = bm.get_content(*block);
     vector<Attribute> attributeVector;
     int recordSize = api->recordSizeGet(tableName);
 
     api->attributeGet(tableName, &attributeVector);
     
-    while (recordBegin - block->address < block->using_size)
+    while (recordBegin - bm.get_content(*block)  < bm.get_usingSize(*block))
     {
         //if the recordBegin point to a record
         
@@ -186,6 +189,82 @@ int RecordManager::recordBlockShow(string tableName, vector<Condition>* conditio
             count ++;
             recordPrint(recordBegin, recordSize, &attributeVector);
             cout << endl;
+        }
+        
+        recordBegin += recordSize;
+        
+    }
+    
+    return count;
+}
+
+
+/**
+ *
+ * find the number of all record of a table meet requirement
+ * @param tableName: name of table
+ * @param conditionVector: the conditions list
+ * @return int: the number of the record meet requirements(-1 represent error)
+ */
+int RecordManager::recordAllFind(string tableName, vector<Condition>* conditionVector)
+{
+    fileNode *ftmp = bm.getFile(tableFileNameGet(tableName).c_str());
+    blockNode *btmp = bm.getBlockHead(ftmp);
+    int count = 0;
+    while (true)
+    {
+        if (btmp == NULL)
+        {
+            return -1;
+        }
+        if (btmp->ifbottom)
+        {
+            int recordBlockNum = recordBlockDelete(tableName, conditionVector, btmp);
+            count += recordBlockNum;
+            btmp = bm.getNextBlock(ftmp, btmp);
+            return count;
+        }
+        else
+        {
+            int recordBlockNum = recordBlockShow(tableName, conditionVector, btmp);
+            count += recordBlockNum;
+            btmp = bm.getNextBlock(ftmp, btmp);
+        }
+    }
+    
+    return -1;
+}
+
+/**
+ *
+ * find the number of record of a table in a block
+ * @param tableName: name of table
+ * @param block: search record in the block
+ * @param conditionVector: the conditions list
+ * @return int: the number of the record meet requirements in the block(-1 represent error)
+ */
+int RecordManager::recordBlockFind(string tableName, vector<Condition>* conditionVector, blockNode* block)
+{
+    //if block is null, return -1
+    if (block == NULL)
+    {
+        return -1;
+    }
+    int count = 0;
+    
+    char* recordBegin = bm.get_content(*block);
+    vector<Attribute> attributeVector;
+    int recordSize = api->recordSizeGet(tableName);
+    
+    api->attributeGet(tableName, &attributeVector);
+    
+    while (recordBegin - bm.get_content(*block)  < bm.get_usingSize(*block))
+    {
+        //if the recordBegin point to a record
+        
+        if(recordConditionFit(recordBegin, recordSize, &attributeVector, conditionVector))
+        {
+            count++;
         }
         
         recordBegin += recordSize;
@@ -206,6 +285,7 @@ int RecordManager::recordAllDelete(string tableName, vector<Condition>* conditio
 {
     fileNode *ftmp = bm.getFile(tableFileNameGet(tableName).c_str());
     blockNode *btmp = bm.getBlockHead(ftmp);
+
     int count = 0;
     while (true)
     {
@@ -215,6 +295,9 @@ int RecordManager::recordAllDelete(string tableName, vector<Condition>* conditio
         }
         if (btmp->ifbottom)
         {
+            int recordBlockNum = recordBlockDelete(tableName, conditionVector, btmp);
+            count += recordBlockNum;
+            btmp = bm.getNextBlock(ftmp, btmp);
             return count;
         }
         else
@@ -245,25 +328,27 @@ int RecordManager::recordBlockDelete(string tableName,  vector<Condition>* condi
     }
     int count = 0;
     
-    char* recordBegin = block->address;
+    char* recordBegin = bm.get_content(*block);
     vector<Attribute> attributeVector;
     int recordSize = api->recordSizeGet(tableName);
     
     api->attributeGet(tableName, &attributeVector);
     
-    while (recordBegin - block->address < block->using_size)
+    while (recordBegin - bm.get_content(*block) < bm.get_usingSize(*block))
     {
         //if the recordBegin point to a record
         
         if(recordConditionFit(recordBegin, recordSize, &attributeVector, conditionVector))
         {
             count ++;
-            api->recordIndexDelete(recordBegin, recordSize, &attributeVector);
-            for (int i = 0; i + recordSize + recordBegin - block->address < block->using_size; i++)
+            api->recordIndexDelete(recordBegin, recordSize, &attributeVector, block->offsetNum);
+            int i = 0;
+            for (i = 0; i + recordSize + recordBegin - bm.get_content(*block) < bm.get_usingSize(*block); i++)
             {
                 recordBegin[i] = recordBegin[i + recordSize];
             }
-            block->using_size -= recordSize;
+            memset(recordBegin + i, 0, recordSize);
+            bm.set_usingSize(*block, bm.get_usingSize(*block) - recordSize);
             bm.set_dirty(*block);
         }
         else
