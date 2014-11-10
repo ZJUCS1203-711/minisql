@@ -63,7 +63,7 @@ public:
     
     
     void tableDrop(string tableName);
-    void tableCreate(string tableName, vector<Attribute>* attributeVector, string primaryKeyName = "no");
+    void tableCreate(string tableName, vector<Attribute>* attributeVector, string primaryKeyName = "");
     
     void indexDrop(string indexName);
 	void indexCreate(string indexName, string tableName, string attributeName);
