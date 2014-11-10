@@ -168,7 +168,12 @@ fileNode* BufferManager::getFile(const char * fileName, bool if_pin)
         }
         init_file(*ftmp);
     }
-    strcpy(ftmp->fileName, fileName);
+    if(strlen(fileName) + 1 > MAX_FILE_NAME)
+    {
+        printf("文件名长度过长，最高不能超过%d\n",MAX_FILE_NAME);
+        exit(3);
+    }
+    strncpy(ftmp->fileName, fileName,MAX_FILE_NAME);
     set_pin(*ftmp, if_pin);
     return ftmp;
 }
@@ -263,7 +268,12 @@ blockNode* BufferManager::getBlock(fileNode * file,blockNode *position, bool if_
         file->blockHead = btmp;
     }
     set_pin(*btmp, if_pin);
-    strcpy(btmp->fileName, fileName);
+    if(strlen(fileName) + 1 > MAX_FILE_NAME)
+    {
+        printf("文件名长度过长，最高不能超过%d\n",MAX_FILE_NAME);
+        exit(3);
+    }
+    strncpy(btmp->fileName, fileName, MAX_FILE_NAME);
     
     //read the file content to the block
     FILE * fileHandle;
