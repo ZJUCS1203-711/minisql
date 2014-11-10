@@ -16,19 +16,15 @@ public:
     BufferManager bm;
     API *api;
     
-    //返回 记录数
-    //输出 table的符合条件的记录
-    //输入 table的名称，条件列表
     int recordAllShow(string tableName, vector<Condition>* conditionVector);
     
     int recordBlockShow(string tableName, vector<Condition>* conditionVector, blockNode* block);
 
     int recordInsert(string tableName, char* record, int recordSize);
     
-    //返回 记录数
-    //删除 一个表的条件的符合条件记录
-    //输入 table的名称, 和一个条件的列表
-	int recordDelete(string tableName, vector<Condition>* conditionVector){return 1;}
+    int recordAllDelete(string tableName, vector<Condition>* conditionVector);
+    
+    int recordBlockDelete(string tableName,  vector<Condition>* conditionVector, blockNode* block);
 
     int indexDrop(string indexName);
     int indexCreate(string indexName);

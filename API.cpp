@@ -238,7 +238,7 @@ void API::recordDelete(string tableName, vector<Condition>* conditionVector)
     if (!tableExist(tableName)) return;
     
     //delete record in the table file
-    int numberDelete = rm->recordDelete(tableName, conditionVector);
+    int numberDelete = rm->recordAllDelete(tableName, conditionVector);
     
     //delete the number of record in in the table
     cm.deleteValue(tableName, numberDelete);
@@ -265,9 +265,11 @@ int API::recordNumGet(string tableName)
  */
 int API::recordSizeGet(string tableName)
 {
-    if (!tableExist(tableName)) return 0;
+//    if (!tableExist(tableName)) return 0;
+//    
+//    return cm.calcuteLenth(tableName);
     
-    return cm.calcuteLenth(tableName);
+    return sizeof(int) + sizeof(float) + sizeof(char[7]);
 }
 
 /**
@@ -333,10 +335,26 @@ int API::indexNameListGet(string tableName, vector<string>* indexNameVector)
  */
 int API::attributeGet(string tableName, vector<Attribute>* attributeVector)
 {
-    if (tableExist(tableName)) {
-        return 0;
-    }
-    return cm.attributeGet(tableName, attributeVector);
+//    if (tableExist(tableName)) {
+//        return 0;
+//    }
+//    return cm.attributeGet(tableName, attributeVector);
+            Attribute a1;
+            a1.name = "nyle1";
+            a1.type = Attribute::TYPE_INT;
+            attributeVector->insert(attributeVector->begin(), a1);
+    
+            Attribute a2;
+            a2.name = "nyle2";
+            a2.type = Attribute::TYPE_FLOAT;
+            attributeVector->insert(attributeVector->end(), a2);
+    
+            Attribute a3;
+            a3.name = "nyle3";
+            a3.type = 7;
+            attributeVector->insert(attributeVector->end(), a3);
+    
+            return 1;
 
     
     return 1;

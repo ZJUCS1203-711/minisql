@@ -100,6 +100,7 @@ public:
     int attributeGet(string tableName, vector<Attribute>* attributeVector);
 
     void indexValueInsert(string indexName, string value);
+    void recordIndexDelete(char* recordBegin,int recordSize, vector<Attribute>* attributeVector){}
     
     //输出 二叉树的一个节点（待修改）
     //输入 索引名称,value

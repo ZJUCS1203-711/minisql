@@ -99,13 +99,17 @@ int RecordManager::recordInsert(string tableName,char* record, int recordSize)
         }
         if (btmp->using_size <= BLOCK_SIZE - recordSize)
         {
+            
             char* addressBegin;
             addressBegin = btmp->address + btmp->using_size;
             memcpy(addressBegin, record, recordSize);
+//            cout << "using_size_beign" << (int)btmp->using_size;
+            
             btmp->using_size += recordSize;
+//            cout << "recordSize" << recordSize << ";using_size";
+//            cout << (int)btmp->using_size;
             bm.set_dirty(*btmp);
             return btmp->offsetNum;
-            break;
         }
         else
         {
@@ -116,10 +120,38 @@ int RecordManager::recordInsert(string tableName,char* record, int recordSize)
     return -1;
 }
 
+
+/**
+ *
+ * print all record of a table meet requirement
+ * @param tableName: name of table
+ * @param conditionVector: the conditions list
+ * @return int: the number of the record meet requirements(-1 represent error)
+ */
 int RecordManager::recordAllShow(string tableName, vector<Condition>* conditionVector)
 {
+    fileNode *ftmp = bm.getFile(tableFileNameGet(tableName).c_str());
+    blockNode *btmp = bm.getBlockHead(ftmp);
+    int count = 0;
+    while (true)
+    {
+        if (btmp == NULL)
+        {
+            return -1;
+        }
+        if (btmp->ifbottom)
+        {
+            return count;
+        }
+        else
+        {
+            int recordBlockNum = recordBlockShow(tableName, conditionVector, btmp);
+            count += recordBlockNum;
+            btmp = bm.getNextBlock(ftmp, btmp);
+        }
+    }
     
-    return  0;
+    return -1;
 }
 
 /**
@@ -128,9 +160,83 @@ int RecordManager::recordAllShow(string tableName, vector<Condition>* conditionV
  * @param tableName: name of table
  * @param block: search record in the block
  * @param conditionVector: the conditions list
- * @return int: the number of the record meet requirements int the block(1 represent error)
+ * @return int: the number of the record meet requirements in the block(-1 represent error)
  */
 int RecordManager::recordBlockShow(string tableName, vector<Condition>* conditionVector, blockNode* block)
+{
+    //if block is null, return -1
+    if (block == NULL)
+    {
+        return -1;
+    }
+    int count = 0;
+    
+    char* recordBegin = block->address;
+    vector<Attribute> attributeVector;
+    int recordSize = api->recordSizeGet(tableName);
+
+    api->attributeGet(tableName, &attributeVector);
+    
+    while (recordBegin - block->address < block->using_size)
+    {
+        //if the recordBegin point to a record
+        
+        if(recordConditionFit(recordBegin, recordSize, &attributeVector, conditionVector))
+        {
+            count ++;
+            recordPrint(recordBegin, recordSize, &attributeVector);
+            cout << endl;
+        }
+        
+        recordBegin += recordSize;
+        
+    }
+    
+    return count;
+}
+
+/**
+ *
+ * delete all record of a table meet requirement
+ * @param tableName: name of table
+ * @param conditionVector: the conditions list
+ * @return int: the number of the record meet requirements(-1 represent error)
+ */
+int RecordManager::recordAllDelete(string tableName, vector<Condition>* conditionVector)
+{
+    fileNode *ftmp = bm.getFile(tableFileNameGet(tableName).c_str());
+    blockNode *btmp = bm.getBlockHead(ftmp);
+    int count = 0;
+    while (true)
+    {
+        if (btmp == NULL)
+        {
+            return -1;
+        }
+        if (btmp->ifbottom)
+        {
+            return count;
+        }
+        else
+        {
+            int recordBlockNum = recordBlockDelete(tableName, conditionVector, btmp);
+            count += recordBlockNum;
+            btmp = bm.getNextBlock(ftmp, btmp);
+        }
+    }
+    
+    return -1;
+}
+
+/**
+ *
+ * delete record of a table in a block
+ * @param tableName: name of table
+ * @param block: search record in the block
+ * @param conditionVector: the conditions list
+ * @return int: the number of the record meet requirements in the block(-1 represent error)
+ */
+int RecordManager::recordBlockDelete(string tableName,  vector<Condition>* conditionVector, blockNode* block)
 {
     //if block is null, return -1
     if (block == NULL)
@@ -152,11 +258,18 @@ int RecordManager::recordBlockShow(string tableName, vector<Condition>* conditio
         if(recordConditionFit(recordBegin, recordSize, &attributeVector, conditionVector))
         {
             count ++;
-            recordPrint(recordBegin, recordSize, &attributeVector);
-            cout << endl;
+            api->recordIndexDelete(recordBegin, recordSize, &attributeVector);
+            for (int i = 0; i + recordSize + recordBegin - block->address < block->using_size; i++)
+            {
+                recordBegin[i] = recordBegin[i + recordSize];
+            }
+            block->using_size -= recordSize;
+            bm.set_dirty(*block);
         }
-        
-        recordBegin += recordSize;
+        else
+        {
+            recordBegin += recordSize;
+        }
     }
     
     return count;
@@ -173,6 +286,9 @@ int RecordManager::recordBlockShow(string tableName, vector<Condition>* conditio
  */
 bool RecordManager::recordConditionFit(char* recordBegin,int recordSize, vector<Attribute>* attributeVector,vector<Condition>* conditionVector)
 {
+    if (conditionVector == NULL) {
+        return true;
+    }
     int type;
     string attributeName;
     int typeSize;
@@ -187,22 +303,20 @@ bool RecordManager::recordConditionFit(char* recordBegin,int recordSize, vector<
         
         //init content (when content is string , we can get a string easily)
         memset(content, 0, 255);
-        if (conditionVector != NULL)
+        memcpy(content, contentBegin, typeSize);
+        for(Condition condition : *conditionVector)
         {
-            memcpy(content, contentBegin, typeSize);
-            for(Condition condition : *conditionVector)
+            if (condition.attributeName == attributeName)
             {
-                if (condition.attributeName == attributeName)
+                //if this attribute need to deal about the condition
+                if(!contentConditionFit(content, type, &condition))
                 {
-                    //if this attribute need to deal about the condition
-                    if(!contentConditionFit(content, type, &condition))
-                    {
-                        //if this record is not fit the conditon
-                        return false;
-                    }
+                    //if this record is not fit the conditon
+                    return false;
                 }
             }
         }
+
         contentBegin += typeSize;
     }
     return true;
@@ -304,7 +418,8 @@ bool RecordManager::contentConditionFit(char* content,int type,Condition* condit
  */
 string RecordManager::indexFileNameGet(string indexName)
 {
-    return "INDEX_FILE_" + indexName;
+    string tmp = "";
+    return tmp + "/Users/dengyonghui/tmp/" + "INDEX_FILE_" + indexName;
 }
 
 /**
@@ -314,5 +429,6 @@ string RecordManager::indexFileNameGet(string indexName)
  */
 string RecordManager::tableFileNameGet(string tableName)
 {
-    return "TABLE_FILE_" + tableName;
+    string tmp = "";
+    return tmp + "/Users/dengyonghui/tmp/" + "TABLE_FILE_" + tableName;
 }
