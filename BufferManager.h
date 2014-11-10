@@ -37,6 +37,8 @@ class BufferManager
         void set_dirty(blockNode & block);
         void set_pin(blockNode & block,bool pin);
         void set_pin(fileNode & file,bool pin);
+        void set_usingSize(blockNode & block,size_t usage);
+        size_t get_usingSize(blockNode & block);
     
         blockNode* getNextBlock(fileNode * file,blockNode* block);
         blockNode* getBlockHead(fileNode* file);

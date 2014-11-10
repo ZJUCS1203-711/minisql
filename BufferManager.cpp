@@ -91,7 +91,9 @@ void BufferManager::init_file(fileNode &file)
 void BufferManager::init_block(blockNode &block)
 {
     memset(block.address,0,BLOCK_SIZE);
-    block.using_size = 0;
+    size_t init_usage = sizeof(size_t);
+    memcpy(block.address, (char*)&init_usage, sizeof(size_t));
+    block.using_size = sizeof(int);
     block.dirty = false;
     block.nextBlock = NULL;
     block.preBlock = NULL;
@@ -309,7 +311,6 @@ void BufferManager::writtenBackToDisk(const char* fileName,blockNode* block)
         {
             if(fseek(fileHandle, block->offsetNum*BLOCK_SIZE, 0) == 0)
             {
-                printf("被替换的block: block address: %s ,using_size: %zu\n",block->address,block->using_size);
                 if(fwrite(block->address, block->using_size, 1, fileHandle) != 1)
                 {
                     printf("Problem writing the file %s in writtenBackToDisking",fileName);
@@ -470,18 +471,23 @@ void BufferManager::clean_dirty(blockNode &block)
     block.dirty = false;
 }
 
+
 size_t BufferManager::getUsingSize(blockNode* block)
 {
-    char * p = block -> address;
-    for(int i = 0; i < BLOCK_SIZE;i ++)
-    {
-        if(*p==0)
-            break;
-        else
-            p++;
-    }
-    return p-block->address;
+    return *(size_t*)block->address;
 }
+
+void BufferManager::set_usingSize(blockNode & block,size_t usage)
+{
+    block.using_size = usage;
+    memcpy(block.address,(char*)&usage,sizeof(size_t));
+}
+
+size_t BufferManager::get_usingSize(blockNode & block)
+{
+    return block.using_size;
+}
+
 
 
 
