@@ -203,6 +203,7 @@ blockNode* BufferManager::getBlock(fileNode * file,blockNode *position, bool if_
             {
                 btmp = &block_pool[i];
                 total_block ++;
+                break;
             }
             else
                 continue;
@@ -211,7 +212,7 @@ blockNode* BufferManager::getBlock(fileNode * file,blockNode *position, bool if_
     else // total_block >= MAX_BLOCK_NUM,which means that there are no empty block so we must replace one.
     {
         int i = replaced_block;
-        while (1)
+        while (true)
         {
             i ++;
             if(i >= total_block) i = 0;

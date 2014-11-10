@@ -39,6 +39,6 @@ struct fileNode
 
 #define MAX_FILE_NUM 40
 #define MAX_BLOCK_NUM 100
-#define MAX_FILE_NAME 30
+#define MAX_FILE_NAME 100
 
 #endif
