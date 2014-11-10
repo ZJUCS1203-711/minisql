@@ -8,12 +8,28 @@
 
 #ifndef minisql_Condition_h
 #define minisql_Condition_h
+#include <string>
+#include <sstream>
+using namespace std;
 
 class Condition
 {
+    
+public:
+    const static int OPERATOR_EQUAL = 0; // "="
+    const static int OPERATOR_NOT_EQUAL = 1; // "<>"
+    const static int OPERATOR_LESS = 2; // "<"
+    const static int OPERATOR_MORE = 3; // ">"
+    const static int OPERATOR_LESS_EQUAL = 4; // "<="
+    const static int OPERATOR_MORE_EQUAL = 5; // ">="
+    
     string attributeName;   //属性名称
     string value;           //要比较的值
     int operate;            //比较类型
+    
+    bool ifRight(int content);
+    bool ifRight(float content);
+    bool ifRight(string content);
 };
 
 #endif

@@ -7,12 +7,12 @@
 //
 
 #include "API.h"
+#include "RecordManager.h"
 
 #define UNKNOWN_FILE 8
 #define TABLE_FILE 9
 #define INDEX_FILE 10
 
-RecordManager rm;
 CatalogManager cm;
 IndexManager im;
 
@@ -25,8 +25,17 @@ void API::tableDrop(string tableName)
 {
     if (!tableExist(tableName)) return;
     
+    vector<string> indexNameVector;
+    
+    //get all index in the table, and drop them all
+    indexNameListGet(tableName, &indexNameVector);
+    for (vector<string>::size_type i = 0; i < indexNameVector.size(); i++)
+    {
+        indexDrop(indexNameVector[i]);
+    }
+    
     //delete a table file
-    if(rm.tableDrop(tableName))
+    if(rm->tableDrop(tableName))
     {
         //delete a table information
         cm.dropTable(tableName);
@@ -48,7 +57,7 @@ void API::indexDrop(string indexName)
     }
     
     //delete a index file
-    if (rm.indexDrop(indexName))
+    if (rm->indexDrop(indexName))
     {
         //delete a index information
         cm.dropIndex(indexName);
@@ -75,7 +84,7 @@ void API::indexCreate(string indexName, string tableName, string attributeName)
     }
     
      //RecordManager to create a index file
-    if (rm.indexCreate(indexName))
+    if (rm->indexCreate(indexName))
     {
         //CatalogManager to add a index information
         cm.addIndex(indexName, tableName, attributeName);
@@ -105,12 +114,21 @@ void API::tableCreate(string tableName, vector<Attribute>* attributeVector, stri
         return;
     }
     
+    
+    
     //RecordManager to create a table file
-    if(rm.tableCreate(tableName))
+    if(rm->tableCreate(tableName))
     {
         //CatalogManager to create a table information
         cm.addTable(tableName, attributeVector, primaryKeyName);
         cout << "Create table " << tableName << " successfully" << endl;
+    }
+    
+    if (primaryKeyName != "")
+    {
+        //get a primary key
+        string indexName = primaryIndexNameGet(tableName);
+        indexCreate(indexName, tableName, primaryKeyName);
     }
 }
 
@@ -136,7 +154,7 @@ void API::recordShow(string tableName, vector<Condition>* conditionVector)
     if (cm.findFile(tableName) == TABLE_FILE)
     {
         int num;
-        num = rm.recordShow(tableName, conditionVector);
+        num = rm->recordBlockShow(tableName, conditionVector, NULL);
         cout << num << " records selected" << endl;
     }
     else
@@ -155,6 +173,29 @@ void API::recordInsert(string tableName, vector<string>* recordContent)
 {
     if (!tableExist(tableName)) return;
     
+    string indexName;
+    
+    //deal if the record could be insert (if index is exist)
+    vector<Attribute> attributeVector;
+    attributeGet(tableName, &attributeVector);
+    for (vector<Attribute>::size_type i = 0 ; i < attributeVector.size(); i++)
+    {
+        indexName = attributeVector[i].indexNameGet();
+        if (indexName != "")
+        {
+            //if the attribute has a index
+            blockNode block;
+            im.indexValueGet(indexName, (*recordContent)[i], &block);
+            
+            if (&block != NULL)
+            {
+                //if the value has exist in index tree then fail to insert the record
+                cout << "insert fail because index value exist" << endl;
+                return;
+            }
+        }
+    }
+    
     char recordString[2000];
     memset(recordString, 0, 2000);
     
@@ -162,7 +203,9 @@ void API::recordInsert(string tableName, vector<string>* recordContent)
     cm.recordStringGet(tableName, recordContent, recordString);
     
     //RecordManager to insert the record into file;
-    if(rm.recordInsert(tableName, recordString))
+    
+    int recordSize = cm.calcuteLenth(tableName);
+    if(rm->recordInsert(tableName, recordString, recordSize))
     {
          cm.insertRecord(tableName, 1);
          cout << "insert record into table " << tableName << " successful" << endl;
@@ -195,7 +238,7 @@ void API::recordDelete(string tableName, vector<Condition>* conditionVector)
     if (!tableExist(tableName)) return;
     
     //delete record in the table file
-    int numberDelete = rm.recordDelete(tableName, conditionVector);
+    int numberDelete = rm->recordDelete(tableName, conditionVector);
     
     //delete the number of record in in the table
     cm.deleteValue(tableName, numberDelete);
@@ -269,6 +312,21 @@ int API::attributeTypeGet(string tableName, vector<string>* attributeTypeVector)
 
 /**
  *
+ * get the vector of a all name of index in the table
+ * @param tableName:  name of table
+ * @param indexNameVector:  a point to vector of indexName(which would change)
+ */
+int API::indexNameListGet(string tableName, vector<string>* indexNameVector)
+{
+    if (tableExist(tableName)) {
+        return 0;
+    }
+    return cm.indexNameListGet(tableName, indexNameVector);
+}
+
+
+/**
+ *
  * get the vector of a attribute‘s type in a table
  * @param tableName:  name of table
  * @param attributeNameVector:  a point to vector of attributeType(which would change)
@@ -309,4 +367,9 @@ int API::tableExist(string tableName)
     {
         return 1;
     }
+}
+
+string API::primaryIndexNameGet(string tableName)
+{
+    return  "PRIMARY_" + tableName;
 }
