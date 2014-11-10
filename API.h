@@ -1,9 +1,9 @@
 #ifndef API_H
 #define API_H
-#include "RecordManager.h"
 
 #include "Attribute.h"
 #include "Condition.h"
+#include "Minisql.h"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -14,7 +14,9 @@ public:
     void indexCreate(string indexName, string tableName, string attributeName){return;}
     void dropIndex(string indexName){return;}
     void indexValueInsert(string indexName, string value){return;}
+    void indexValueGet(string indexName,string value, blockNode* block){return ;}
 };
+
 class CatalogManager
 {
 public:
@@ -27,7 +29,7 @@ public:
     int deleteValue(string tableName, int deleteNum){return 1;}
     int insertRecord(string tableName, int recordNum){return 1;}
     int getRecordNum(string tableName){return 2000;}
-    
+    int indexNameListGet(string tableName, vector<string>* indexNameVector){return 1;}
     
     
     //--------------我修改比较大的
@@ -49,15 +51,27 @@ public:
     int attributeGet(string tableName, vector<Attribute>* attributeVector){return 1;}
     
     int calcuteLenth(string tableName){return 1;} //得到一个table的记录的大小
-    int calcuteLenth2(int type){return 1;}      //這理我的type改成了int类型，而不是一个String，type类型见attribute.h
+    int calcuteLenth2(int type){
+        if (type == Attribute::TYPE_INT) {
+            return sizeof(int);
+        }
+        else if (type == Attribute::TYPE_FLOAT)
+        {
+            return sizeof(float);
+        }
+        else{
+            return (int) sizeof(char[type]);
+        }
+    }      //這理我的type改成了int类型，而不是一个String，type类型见attribute.h
     
     // 通过table名和recordContent得到这个table的record的字符传，写入传进的字符串
     void recordStringGet(string tableName, vector<string>* recordContent, char* recordResult){return ;}
 };
 
+class RecordManager;
 class API{
 public:
-	RecordManager rm;
+	RecordManager *rm;
 	API(){}
 	~API(){}
     
@@ -93,6 +107,8 @@ public:
     
 private:
     int tableExist(string tableName);
+    int indexNameListGet(string tableName, vector<string>* indexNameVector);
+    string primaryIndexNameGet(string tableName);
 };
 
 struct int_t{
