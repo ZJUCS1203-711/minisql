@@ -29,7 +29,8 @@ class BufferManager
         void writtenBackToDisk(const char* fileName,blockNode* block);
         void clean_dirty(blockNode &block);
         size_t getUsingSize(blockNode* block);
-    
+        static const int BLOCK_SIZE = 8192;
+
     public:
         BufferManager();
         ~BufferManager();
@@ -39,6 +40,8 @@ class BufferManager
         void set_pin(fileNode & file,bool pin);
         void set_usingSize(blockNode & block,size_t usage);
         size_t get_usingSize(blockNode & block);
+        char* get_content(blockNode& block);
+        int getBlockSize();
     
         blockNode* getNextBlock(fileNode * file,blockNode* block);
         blockNode* getBlockHead(fileNode* file);

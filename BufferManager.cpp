@@ -91,9 +91,9 @@ void BufferManager::init_file(fileNode &file)
 void BufferManager::init_block(blockNode &block)
 {
     memset(block.address,0,BLOCK_SIZE);
-    size_t init_usage = sizeof(size_t);
-    memcpy(block.address, (char*)&init_usage, sizeof(size_t));
-    block.using_size = sizeof(int);
+    size_t init_usage = 0;
+    memcpy(block.address, (char*)&init_usage, sizeof(size_t)); // set the block head
+    block.using_size = sizeof(size_t);
     block.dirty = false;
     block.nextBlock = NULL;
     block.preBlock = NULL;
@@ -311,7 +311,7 @@ void BufferManager::writtenBackToDisk(const char* fileName,blockNode* block)
         {
             if(fseek(fileHandle, block->offsetNum*BLOCK_SIZE, 0) == 0)
             {
-                if(fwrite(block->address, block->using_size, 1, fileHandle) != 1)
+                if(fwrite(block->address, block->using_size+sizeof(size_t), 1, fileHandle) != 1)
                 {
                     printf("Problem writing the file %s in writtenBackToDisking",fileName);
                     exit(1);
@@ -486,6 +486,33 @@ void BufferManager::set_usingSize(blockNode & block,size_t usage)
 size_t BufferManager::get_usingSize(blockNode & block)
 {
     return block.using_size;
+}
+
+/**
+ *
+ * Get the content of the block except the block head
+ *
+ * @param blockNode&
+ *
+ * @return 
+ *
+ */
+char* BufferManager::get_content(blockNode& block)
+{
+    return block.address + sizeof(size_t);
+}
+
+/**
+ *
+ * Get the size of the block that others can use 
+ * Others cannot use the block head
+ *
+ * @return int 
+ *
+ */
+int BufferManager::getBlockSize()
+{
+    return BLOCK_SIZE - sizeof(size_t);
 }
 
 
