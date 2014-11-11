@@ -382,7 +382,7 @@ blockNode* BufferManager::getNextBlock(fileNode* file,blockNode* block)
 {
     if(block->nextBlock == NULL)
     {
-        if(!block->ifbottom) block->ifbottom = true;
+        if(block->ifbottom) block->ifbottom = false;
         return getBlock(file, block);
     }
     else //block->nextBlock != NULL
