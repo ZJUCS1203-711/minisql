@@ -61,8 +61,7 @@ int test_bufferManager(){
         }
     }
     cout << "====exit==="<< endl;
-   
-    return 0;
+    return 1;
 }
 
 int main()
