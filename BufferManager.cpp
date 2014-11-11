@@ -381,7 +381,10 @@ void BufferManager::writtenBackToDiskAll()
 blockNode* BufferManager::getNextBlock(fileNode* file,blockNode* block)
 {
     if(block->nextBlock == NULL)
+    {
+        if(!block->ifbottom) block->ifbottom = true;
         return getBlock(file, block);
+    }
     else //block->nextBlock != NULL
     {
         if(block->offsetNum == block->nextBlock->offsetNum - 1)
