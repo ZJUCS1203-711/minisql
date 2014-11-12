@@ -103,11 +103,7 @@ int RecordManager::recordInsert(string tableName,char* record, int recordSize)
             char* addressBegin;
             addressBegin = bm.get_content(*btmp) + bm.get_usingSize(*btmp);
             memcpy(addressBegin, record, recordSize);
-//            cout << "using_size_beign" << (int)btmp->using_size;
-            
             bm.set_usingSize(*btmp, bm.get_usingSize(*btmp) + recordSize);
-//            cout << "recordSize" << recordSize << ";using_size";
-//            cout << (int)btmp->using_size;
             bm.set_dirty(*btmp);
             return btmp->offsetNum;
         }
@@ -219,14 +215,14 @@ int RecordManager::recordAllFind(string tableName, vector<Condition>* conditionV
         }
         if (btmp->ifbottom)
         {
-            int recordBlockNum = recordBlockDelete(tableName, conditionVector, btmp);
+            int recordBlockNum = recordBlockFind(tableName, conditionVector, btmp);
             count += recordBlockNum;
             btmp = bm.getNextBlock(ftmp, btmp);
             return count;
         }
         else
         {
-            int recordBlockNum = recordBlockShow(tableName, conditionVector, btmp);
+            int recordBlockNum = recordBlockFind(tableName, conditionVector, btmp);
             count += recordBlockNum;
             btmp = bm.getNextBlock(ftmp, btmp);
         }
@@ -360,6 +356,78 @@ int RecordManager::recordBlockDelete(string tableName,  vector<Condition>* condi
     return count;
 }
 
+int RecordManager::indexRecordAllAlreadyInsert(string tableName,string indexName)
+{
+    fileNode *ftmp = bm.getFile(tableFileNameGet(tableName).c_str());
+    blockNode *btmp = bm.getBlockHead(ftmp);
+    int count = 0;
+    while (true)
+    {
+        if (btmp == NULL)
+        {
+            return -1;
+        }
+        if (btmp->ifbottom)
+        {
+            int recordBlockNum = indexRecordBlockAlreadyInsert(tableName, indexName, btmp);
+            count += recordBlockNum;
+            btmp = bm.getNextBlock(ftmp, btmp);
+            return count;
+        }
+        else
+        {
+            int recordBlockNum = indexRecordBlockAlreadyInsert(tableName, indexName, btmp);
+            count += recordBlockNum;
+            btmp = bm.getNextBlock(ftmp, btmp);
+        }
+    }
+    
+    return -1;
+}
+
+ int RecordManager::indexRecordBlockAlreadyInsert(string tableName,string indexName,  blockNode* block)
+{
+    //if block is null, return -1
+    if (block == NULL)
+    {
+        return -1;
+    }
+    int count = 0;
+    
+    char* recordBegin = bm.get_content(*block);
+    vector<Attribute> attributeVector;
+    int recordSize = api->recordSizeGet(tableName);
+    
+    api->attributeGet(tableName, &attributeVector);
+    
+    int type;
+    int typeSize;
+    char * contentBegin;
+    
+    while (recordBegin - bm.get_content(*block)  < bm.get_usingSize(*block))
+    {
+        contentBegin = recordBegin;
+        //if the recordBegin point to a record
+        for (int i = 0; i < attributeVector.size(); i++)
+        {
+            type = attributeVector[i].type;
+            typeSize = api->typeSizeGet(type);
+            
+            //find the index  of the record, and insert it to index tree
+            if (attributeVector[i].index == indexName)
+            {
+                api->indexInsert(indexName, contentBegin, type, block->offsetNum);
+                count++;
+            }
+            
+            contentBegin += typeSize;
+        }
+        recordBegin += recordSize;
+    }
+    
+    return count;
+}
+
 /**
  *
  * judge if the record meet the requirement
@@ -465,6 +533,8 @@ void RecordManager::contentPrint(char * content, int type)
     }
 
 }
+
+
 
 /**
  *

@@ -91,6 +91,9 @@ void API::indexCreate(string indexName, string tableName, string attributeName)
         
         //indexManager to create a index tress
         im->indexCreate(indexName, tableName, attributeName);
+        
+        //recordManager insert already record to index
+        rm->indexRecordAllAlreadyInsert(tableName, indexName);
         cout << "Create index " << indexName << " successfully" << endl;
     }
     else
@@ -451,7 +454,7 @@ int API::attributeGet(string tableName, vector<Attribute>* attributeVector)
 
 }
 
-void API::recordIndexInsert(char* recordBegin,int recordSize, vector<Attribute>* attributeVector,  int blockOffet)
+void API::recordIndexInsert(char* recordBegin,int recordSize, vector<Attribute>* attributeVector,  int blockOffset)
 {
     char* contentBegin = recordBegin;
     for (int i = 0; i < (*attributeVector).size() ; i++)
@@ -460,25 +463,30 @@ void API::recordIndexInsert(char* recordBegin,int recordSize, vector<Attribute>*
         int typeSize = typeSizeGet(type);
         if ((*attributeVector)[i].index != "")
         {
-            //if the attribute has index
-            ///这里传*attributeVector)[i].index这个index的名字, blockOffset,还有值
-            if (type == Attribute::TYPE_INT)
-            {
-                int value = *((int*)contentBegin);
-            }
-            else if (type == Attribute::TYPE_FLOAT)
-            {
-                float value = *((float* )contentBegin);
-            }
-            else
-            {
-                char value[255];
-                memset(value, 0, 255);
-                memcpy(value, contentBegin, sizeof(char[type]));
-            }
+            indexInsert((*attributeVector)[i].index, contentBegin, type, blockOffset);
         }
         
         contentBegin += typeSize;
+    }
+}
+
+void API::indexInsert(string indexName, char* contentBegin, int type, int blockOffset)
+{
+    //if the attribute has index
+    ///这里传*attributeVector)[i].index这个index的名字, blockOffset,还有值
+    if (type == Attribute::TYPE_INT)
+    {
+        int value = *((int*)contentBegin);
+    }
+    else if (type == Attribute::TYPE_FLOAT)
+    {
+        float value = *((float* )contentBegin);
+    }
+    else
+    {
+        char value[255];
+        memset(value, 0, 255);
+        memcpy(value, contentBegin, sizeof(char[type]));
     }
 }
 
