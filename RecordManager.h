@@ -33,6 +33,9 @@ public:
     int tableCreate(string tableName);
     int tableDrop(string tableName);
     
+    int indexRecordAllAlreadyInsert(string tableName,string indexName);
+    int indexRecordBlockAlreadyInsert(string tableName,string indexName, blockNode* block);
+    
 private:
     bool recordConditionFit(char* recordBegin,int recordSize, vector<Attribute>* attributeVector,vector<Condition>* conditionVector);
     void recordPrint(char* recordBegin, int recordSize, vector<Attribute>* attributeVector);

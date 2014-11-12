@@ -101,6 +101,7 @@ public:
 
     void indexValueInsert(string indexName, string value, int blockOffset);
     
+    void indexInsert(string indexName, char* value, int type, int blockOffset);
     void recordIndexDelete(char* recordBegin,int recordSize, vector<Attribute>* attributeVector, int blockOffset);
     void recordIndexInsert(char* recordBegin,int recordSize, vector<Attribute>* attributeVector, int blockOffset);
     
