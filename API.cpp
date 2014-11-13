@@ -109,7 +109,7 @@ void API::indexCreate(string indexName, string tableName, string attributeName)
  * @param attributeVector: vector of attribute
  * @param primaryKeyName: primary key of a table (default: "")
  */
-void API::tableCreate(string tableName, vector<Attribute>* attributeVector, string primaryKeyName)
+void API::tableCreate(string tableName, vector<Attribute>* attributeVector, string primaryKeyName,int primaryKeyLocation)
 {
     if(cm->findFile(tableName) == TABLE_FILE)
     {
@@ -123,7 +123,7 @@ void API::tableCreate(string tableName, vector<Attribute>* attributeVector, stri
     if(rm->tableCreate(tableName))
     {
         //CatalogManager to create a table information
-        cm->addTable(tableName, attributeVector, primaryKeyName);
+        cm->addTable(tableName, attributeVector, primaryKeyName,primaryKeyLocation);
         cout << "Create table " << tableName << " successfully" << endl;
     }
     

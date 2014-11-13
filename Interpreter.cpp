@@ -96,6 +96,7 @@ int Interpreter::interpreter(string s)
 
 					word = getWord(s,&tmp);
 				}
+				int primaryKeyLocation = 0;
 				if (strcmp(word.c_str(),"primary") == 0)	// deal with primary key
 				{
 					word = getWord(s,&tmp);
@@ -111,6 +112,18 @@ int Interpreter::interpreter(string s)
 						{
 							word = getWord(s,&tmp);
 							primaryKey = word;
+							int i = 0;
+							for( i= 0;i<attributeVector.size();i++)
+							{
+								if(primaryKey==attributeVector[i].name)
+									break;
+							}
+							if(i==attributeVector.size())
+							{
+								cout<<"Syntax Error: primaryKey does not exist in attributes "<<endl;
+								return 0;
+							}
+							primaryKeyLocation = i;
 							word = getWord(s,&tmp);
 							if (strcmp(word.c_str(),")") != 0)
 							{
@@ -137,7 +150,7 @@ int Interpreter::interpreter(string s)
 					return 0;
 				}
 
-				ap.tableCreate(tableName,&attributeVector,primaryKey);
+				ap.tableCreate(tableName,&attributeVector,primaryKey,primaryKeyLocation);
 				return 1;
 			}
 		}
