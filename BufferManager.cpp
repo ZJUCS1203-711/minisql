@@ -279,9 +279,7 @@ blockNode* BufferManager::getBlock(fileNode * file,blockNode *position, bool if_
     FILE * fileHandle;
     if((fileHandle = fopen(fileName, "ab+")) != NULL)
     {
-
         if(fseek(fileHandle, btmp->offsetNum*BLOCK_SIZE, 0) == 0)
-
         {
             if(fread(btmp->address, 1, BLOCK_SIZE, fileHandle)==0)
                 btmp->ifbottom = true;
@@ -440,7 +438,6 @@ blockNode* BufferManager::getBlockHead(fileNode* file)
  *
  */
 blockNode* BufferManager::getBlockByOffset(fileNode* file, int offsetNumber)
-
 //TODO: 改为直接fseek寻找的方式效率更高
 {
     blockNode* btmp = NULL;
