@@ -12,7 +12,6 @@ public:
     CatalogManager();
     virtual ~CatalogManager();
     int addIndex(string indexName,string tableName,string attributeName);
-    int findFile(string fileName);
     int findTable(string tableName);
     int findIndex(string indexName);
     int dropTable(string tableName);
