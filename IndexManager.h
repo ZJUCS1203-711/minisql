@@ -16,18 +16,23 @@
 
 class IndexManager{
 private:
+    typedef map<string,BPlusTree<int> *> intMap;
+    typedef map<string,BPlusTree<string> *> stringMap;
+    typedef map<string,BPlusTree<float> *> floatMap;
+
     int static const TYPE_FLOAT = -1;
-    int static const TYPE_INT = 0;
+    int static const TYPE_INT = 0; // other values mean the size of the char.Eg, 4 means char(4);
     
-    map<string,BPlusTree<int> *> indexIntMap;
-    map<string,BPlusTree<string> *> indexStringMap;
-    map<string,BPlusTree<float> *> indexFloatMap;
+    intMap indexIntMap;
+    stringMap indexStringMap;
+    floatMap indexFloatMap;
+    
+    int getDegree(int type);
 
 public:
     IndexManager();
     ~IndexManager();
 
-    
     void createIndex(string indexName,int type);
     
     void dropIndex(string indexName,int type);
@@ -36,7 +41,7 @@ public:
 
     void insertIndex(string indexName,string key,offsetNumber blockOffset,int type);
     
-    void deleteIndex(string indexName,string key,int type);
+    void deleteIndexByKey(string indexName,string key,int type);
 };
 
 
