@@ -896,7 +896,6 @@ void BPlusTree<KeyType>::writtenbackToDiskAll()
     }
     
 }
->>>>>>> 1f361341e68562bf8f4529691f1ac6c493808195
 
 //debug
 template <class KeyType>

@@ -23,6 +23,8 @@ public:
     const static int OPERATOR_LESS_EQUAL = 4; // "<="
     const static int OPERATOR_MORE_EQUAL = 5; // ">="
     
+    Condition(string a,string v,int o);
+    
     string attributeName;   //属性名称
     string value;           //要比较的值
     int operate;            //比较类型

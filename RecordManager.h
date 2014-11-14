@@ -36,12 +36,12 @@ public:
     int indexRecordAllAlreadyInsert(string tableName,string indexName);
     int indexRecordBlockAlreadyInsert(string tableName,string indexName, blockNode* block);
     
+    string tableFileNameGet(string tableName);
+    string indexFileNameGet(string indexName);
 private:
     bool recordConditionFit(char* recordBegin,int recordSize, vector<Attribute>* attributeVector,vector<Condition>* conditionVector);
     void recordPrint(char* recordBegin, int recordSize, vector<Attribute>* attributeVector);
     bool contentConditionFit(char* content, int type, Condition* condition);
     void contentPrint(char * content, int type);
-    string tableFileNameGet(string tableName);
-    string indexFileNameGet(string indexName);
 };
 #endif

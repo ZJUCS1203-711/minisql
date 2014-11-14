@@ -36,7 +36,6 @@ int CatalogManager::getIndexType(string indexName)
         char* addressBegin;
         addressBegin = bm.get_content(*btmp);
         IndexInfo * i = (IndexInfo *)addressBegin;
-        int flag = UNKNOWN_FILE;
         for(int j = 0 ;j<(bm.get_usingSize(*btmp)/sizeof(IndexInfo));j++)
         {
             if((*i).indexName==indexName)

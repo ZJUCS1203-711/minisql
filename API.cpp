@@ -9,6 +9,7 @@
 #include "API.h"
 #include "RecordManager.h"
 #include "CatalogManager.h"
+#include "IndexManager.h"
 
 #define UNKNOWN_FILE 8
 #define TABLE_FILE 9
@@ -63,8 +64,15 @@ void API::indexDrop(string indexName)
         //delete a index information
         cm->dropIndex(indexName);
         
+        //get type of index
+        int indexType = cm->getIndexType(indexName);
+        if (indexType == -2) {
+            cout << "" << "error";
+            return;
+        }
+        
         //delete a index tree
-        im->dropIndex(indexName);
+        im->dropIndex(indexName, indexType);
         cout << "Drop index " << indexName << " successfully" << endl;
     }
 }
@@ -90,8 +98,15 @@ void API::indexCreate(string indexName, string tableName, string attributeName)
         //CatalogManager to add a index information
         cm->addIndex(indexName, tableName, attributeName);
         
+        //get type of index
+        int indexType = cm->getIndexType(indexName);
+        if (indexType == -2) {
+            cout << "" << "error";
+            return;
+        }
+        
         //indexManager to create a index tress
-        im->indexCreate(indexName, tableName, attributeName);
+        im->createIndex(indexName, indexType);
         
         //recordManager insert already record to index
         rm->indexRecordAllAlreadyInsert(tableName, indexName);
@@ -165,6 +180,7 @@ void API::recordShow(string tableName, vector<Condition>* conditionVector)
         tableAttributePrint(&attributeVector);
         
         blockNode* block = NULL;
+        int blockOffset = -1;
         if (conditionVector != NULL)
         {
             for (Condition condition : *conditionVector)
@@ -175,20 +191,22 @@ void API::recordShow(string tableName, vector<Condition>* conditionVector)
                     {
                         if (attribute.index != "" && attribute.name == condition.attributeName)
                         {
-                            im->indexValueGet(attribute.index, condition.value, block);
+                            blockOffset = im->searchIndex(attribute.index, condition.value, attribute.type);
                         }
                     }
                 }
             }
         }
         
-        if (block == NULL)
+        if (blockOffset == -1)
         {
             //if we con't find the block by index,we need to find all block
             num = rm->recordAllShow(tableName, conditionVector);
         }
         else
         {
+            fileNode *ftmp = bm.getFile(rm->tableFileNameGet(tableName).c_str());
+            block = bm.getBlockByOffset(ftmp, blockOffset);
             //find the block by index,search in the block
             num = rm->recordBlockShow(tableName, conditionVector, block);
         }
@@ -225,23 +243,21 @@ void API::recordInsert(string tableName, vector<string>* recordContent)
         if (indexName != "")
         {
             //if the attribute has a index
-            blockNode block;
-            im->indexValueGet(indexName, (*recordContent)[i], &block);
+            int blockoffest = im->searchIndex(indexName, (*recordContent)[i], attributeVector[i].type);
             
-            if (&block != NULL)
+            if (blockoffest != -1)
             {
                 //if the value has exist in index tree then fail to insert the record
                 cout << "insert fail because index value exist" << endl;
                 return;
             }
+            
+            
         }
         else if (attributeVector[i].ifUnique)
         {
             //if the attribute is unique but not index
-            Condition condition;
-            condition.attributeName = attributeVector[i].name;
-            condition.operate = Condition::OPERATOR_EQUAL;
-            condition.value = (*recordContent)[i];
+            Condition condition(attributeVector[i].name, (*recordContent)[i], Condition::OPERATOR_EQUAL);
             conditionVector.insert(conditionVector.end(), condition);
         }
     }
@@ -303,6 +319,7 @@ void API::recordDelete(string tableName, vector<Condition>* conditionVector)
     attributeGet(tableName, &attributeVector);
 
     blockNode* block = NULL;
+    int blockOffset = -1;
     if (conditionVector != NULL)
     {
         for (Condition condition : *conditionVector)
@@ -313,7 +330,7 @@ void API::recordDelete(string tableName, vector<Condition>* conditionVector)
                 {
                     if (attribute.index != "" && attribute.name == condition.attributeName)
                     {
-                        im->indexValueGet(attribute.index, condition.value, block);
+                        blockOffset = im->searchIndex(attribute.index, condition.value, attribute.type);
                     }
                 }
             }
@@ -321,13 +338,15 @@ void API::recordDelete(string tableName, vector<Condition>* conditionVector)
     }
 
     
-    if (block == NULL)
+    if (blockOffset == -1)
     {
         //if we con't find the block by index,we need to find all block
         num = rm->recordAllDelete(tableName, conditionVector);
     }
     else
     {
+        fileNode *ftmp = bm.getFile(rm->tableFileNameGet(tableName).c_str());
+        block = bm.getBlockByOffset(ftmp, blockOffset);
         //find the block by index,search in the block
         num = rm->recordBlockDelete(tableName, conditionVector, block);
     }
@@ -359,11 +378,9 @@ int API::recordNumGet(string tableName)
  */
 int API::recordSizeGet(string tableName)
 {
-//    if (!tableExist(tableName)) return 0;
-//    
-//    return cm.calcuteLenth(tableName);
+    if (!tableExist(tableName)) return 0;
     
-    return sizeof(int) + sizeof(float) + sizeof(char[7]);
+    return cm->calcuteLenth(tableName);
 }
 
 /**
@@ -399,30 +416,10 @@ int API::indexNameListGet(string tableName, vector<string>* indexNameVector)
  */
 int API::attributeGet(string tableName, vector<Attribute>* attributeVector)
 {
-//    if (tableExist(tableName)) {
-//        return 0;
-//    }
-//    return cm.attributeGet(tableName, attributeVector);
-            Attribute a1;
-            a1.name = "nyle1";
-            a1.type = Attribute::TYPE_INT;
-            attributeVector->insert(attributeVector->begin(), a1);
-    
-            Attribute a2;
-            a2.name = "nyle2";
-            a2.type = Attribute::TYPE_FLOAT;
-            attributeVector->insert(attributeVector->end(), a2);
-    
-            Attribute a3;
-            a3.name = "nyle3";
-            a3.type = 7;
-            attributeVector->insert(attributeVector->end(), a3);
-    
-            return 1;
-
-    
-    return 1;
-
+    if (tableExist(tableName)) {
+        return 0;
+    }
+    return cm->attributeGet(tableName, attributeVector);
 }
 
 /**
@@ -449,22 +446,30 @@ void API::recordIndexInsert(char* recordBegin,int recordSize, vector<Attribute>*
 
 void API::indexInsert(string indexName, char* contentBegin, int type, int blockOffset)
 {
+    string content= "";
+    stringstream tmp;
     //if the attribute has index
     ///这里传*attributeVector)[i].index这个index的名字, blockOffset,还有值
     if (type == Attribute::TYPE_INT)
     {
         int value = *((int*)contentBegin);
+        tmp << value;
     }
     else if (type == Attribute::TYPE_FLOAT)
     {
         float value = *((float* )contentBegin);
+        tmp << value;
     }
     else
     {
         char value[255];
         memset(value, 0, 255);
         memcpy(value, contentBegin, sizeof(char[type]));
+        string stringTmp = value;
+        tmp << stringTmp;
     }
+    tmp >> content;
+    im->insertIndex(indexName, content, blockOffset, type);
 }
 
 void API::recordIndexDelete(char* recordBegin,int recordSize, vector<Attribute>* attributeVector, int blockOffset)
@@ -474,6 +479,10 @@ void API::recordIndexDelete(char* recordBegin,int recordSize, vector<Attribute>*
     {
         int type = (*attributeVector)[i].type;
         int typeSize = typeSizeGet(type);
+        
+        string content= "";
+        stringstream tmp;
+        
         if ((*attributeVector)[i].index != "")
         {
             //if the attribute has index
@@ -481,16 +490,20 @@ void API::recordIndexDelete(char* recordBegin,int recordSize, vector<Attribute>*
             if (type == Attribute::TYPE_INT)
             {
                 int value = *((int*)contentBegin);
+                tmp << value;
             }
             else if (type == Attribute::TYPE_FLOAT)
             {
                 float value = *((float* )contentBegin);
+                tmp << value;
             }
             else
             {
                 char value[255];
                 memset(value, 0, 255);
                 memcpy(value, contentBegin, sizeof(char[type]));
+                string stringTmp = value;
+                tmp << stringTmp;
             }
         }
         
@@ -499,22 +512,6 @@ void API::recordIndexDelete(char* recordBegin,int recordSize, vector<Attribute>*
 
 }
 
-/**
- *
- * insert a value to index tree
- * @param indexName:  name of index
- * @param value: value that want to change
- */
-void API::indexValueInsert(string indexName, string value, int blockOffset)
-{
-    if(cm->findFile(indexName) != INDEX_FILE)
-    {
-         cout << "There is no index " << indexName << endl;
-        return;
-    }
-    
-    im->indexValueInsert(indexName, value, blockOffset);
-}
 
 int API::tableExist(string tableName)
 {
@@ -541,3 +538,21 @@ void API::tableAttributePrint(vector<Attribute>* attributeVector)
         cout << attribute.name << " ";
     }
 }
+
+
+///**
+// *
+// * insert a value to index tree
+// * @param indexName:  name of index
+// * @param value: value that want to change
+// */
+//void API::indexValueInsert(string indexName, string value, int blockOffset)
+//{
+//    if(cm->findFile(indexName) != INDEX_FILE)
+//    {
+//         cout << "There is no index " << indexName << endl;
+//        return;
+//    }
+//
+//    im->indexValueInsert(indexName, value, blockOffset);
+//}
