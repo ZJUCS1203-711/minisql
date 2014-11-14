@@ -16,6 +16,8 @@
 #include "Attribute.h"
 #include "BPlusTree.h"
 
+
+
 class IndexManager{
 private:
     typedef map<string,BPlusTree<int> *> intMap;

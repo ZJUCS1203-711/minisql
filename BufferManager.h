@@ -41,7 +41,6 @@ class BufferManager
         void set_usingSize(blockNode & block,size_t usage);
         size_t get_usingSize(blockNode & block);
         char* get_content(blockNode& block);
-
         static int getBlockSize() //Get the size of the block that others can use.Others cannot use the block head
         {
             return BLOCK_SIZE - sizeof(size_t);
