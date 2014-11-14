@@ -16,7 +16,7 @@
 using namespace std;
 
 
-static size_t degree = 5;
+static BufferManager bm;
 //**********************TreeNode***************************//
 typedef int offsetNumber;
 
@@ -34,9 +34,12 @@ public:
     
     bool isLeaf; //是否叶子标识
     
+private:
+    int degree;
+    
 public:
     //创建新节点，参数为false表示创建枝干节点，否则为叶子节点
-    TreeNode(bool newLeaf=false);
+    TreeNode(int degree,bool newLeaf=false);
     ~TreeNode();
     //friend class BPlusTree<KeyType>
     
@@ -60,8 +63,7 @@ public:
 template <typename KeyType>
 class BPlusTree
 {
-// TODO:测试完改为private
-public:
+private:
     typedef TreeNode<KeyType>* Node;
 
     struct searchNodeParse
@@ -72,15 +74,18 @@ public:
         
     };
 private:
-    string name;
+    string fileName;
     Node root;
     Node leafHead; //叶子指针起点
     size_t keyCount; //key数量
     size_t level; //层数
     size_t nodeCount; //节点数
+    fileNode* file; // the filenode of this tree
+    int keySize; // the size of key
+    int degree; // the degree of the tree
     
 public:
-    BPlusTree(string m_name);
+    BPlusTree(string m_name,int keySize,int degree);
     ~BPlusTree();
 
     offsetNumber search(KeyType& key); // search the value of specific key
@@ -90,8 +95,9 @@ public:
     void dropTree();
     
     //TODO:processes about disk
-    void readFromDisk();
-    void writenbackToDisk();
+    void readFromDiskAll();
+    void writtenbackToDiskAll();
+    void readFromDisk(blockNode* btmp);
 
 private:
     void init_tree();//初始化树
