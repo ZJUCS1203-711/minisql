@@ -1,9 +1,24 @@
-#include"IndexInfo.h"
-
-
+#include "CatalogManager.h"
+#include "BufferManager.h"
+#include "IndexInfo.h"
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cstring>
+#include <sstream>
+#include "Attribute.h"
 #define UNKNOWN_FILE 8
 #define TABLE_FILE 9
 #define INDEX_FILE 10
+CatalogManager::CatalogManager() {
+    // TODO Auto-generated constructor stub
+
+}
+
+CatalogManager::~CatalogManager() {
+    // TODO Auto-generated destructor stub
+}
+
 int CatalogManager::dropTable(string tableName)
 {
     if (remove(tableName.c_str()))
@@ -25,9 +40,10 @@ int CatalogManager::addIndex(string indexName,string tableName,string Attribute)
         }
         if (bm.get_usingSize(*btmp) <= bm.getBlockSize() - sizeof(IndexInfo))
         {
-            
+
             char* addressBegin;
             addressBegin = bm.get_content(*btmp) + bm.get_usingSize(*btmp);
+            cout<<"address:"<<(int *)addressBegin<<endl;
             memcpy(addressBegin, &i, sizeof(IndexInfo));
             bm.set_usingSize(*btmp, bm.get_usingSize(*btmp) + sizeof(IndexInfo));
             bm.set_dirty(*btmp);
@@ -38,7 +54,7 @@ int CatalogManager::addIndex(string indexName,string tableName,string Attribute)
             btmp = bm.getNextBlock(ftmp, btmp);
         }
     }
-    
+
     return 0;
 }
 int CatalogManager::findFile(string fileName)
@@ -46,12 +62,12 @@ int CatalogManager::findFile(string fileName)
     fileNode *ftmp = bm.getFile("Indexs");
     blockNode *btmp = bm.getBlockHead(ftmp);
     if (btmp )
-    {         
+    {
         char* addressBegin;
         addressBegin = bm.get_content(*btmp);
-        IndexInfo * i = addressBegin;
+        IndexInfo * i = (IndexInfo *)addressBegin;
         int flag = UNKNOWN_FILE;
-        for(int j = 0 ;j<(bm.get_usingSize(*btmp)/sizeof(IndexInfo);j++)
+        for(int j = 0 ;j<(bm.get_usingSize(*btmp)/sizeof(IndexInfo));j++)
         {
             if((*i).indexName==fileName)
             {
@@ -63,11 +79,11 @@ int CatalogManager::findFile(string fileName)
                 flag = TABLE_FILE;
                 break;
             }
-            i += sizeof(IndexInfo);
+            i ++;
         }
         return flag;
     }
-    
+
     return 0;
 }
 int CatalogManager::dropIndex(string index)
@@ -75,30 +91,30 @@ int CatalogManager::dropIndex(string index)
     fileNode *ftmp = bm.getFile("Indexs");
     blockNode *btmp = bm.getBlockHead(ftmp);
     if (btmp)
-    {         
+    {
         char* addressBegin;
         addressBegin = bm.get_content(*btmp);
-        IndexInfo * i = addressBegin;
+        IndexInfo * i = (IndexInfo *)addressBegin;
         int j = 0;
-        for(j = 0 ;j<(bm.get_usingSize(*btmp)/sizeof(IndexInfo);j++)
+        for(j = 0 ;j<(bm.get_usingSize(*btmp)/sizeof(IndexInfo));j++)
         {
             if((*i).indexName==index)
             {
-                break;          
+                break;
             }
-            i += sizeof(IndexInfo);
+            i ++;
         }
-        for(;j<(bm.get_usingSize(*btmp)/sizeof(IndexInfo)-1;j++)
+        for(;j<(bm.get_usingSize(*btmp)/sizeof(IndexInfo)-1);j++)
         {
             (*i) = *(i + sizeof(IndexInfo));
-            i += sizeof(IndexInfo);
+            i ++;
         }
         bm.set_usingSize(*btmp, bm.get_usingSize(*btmp) - sizeof(IndexInfo));
         bm.set_dirty(*btmp);
 
         return 1;
     }
-    
+
     return 0;
 }
 int CatalogManager::indexNameListGet(string tableName, vector<string>* indexNameVector)
@@ -106,21 +122,21 @@ int CatalogManager::indexNameListGet(string tableName, vector<string>* indexName
     fileNode *ftmp = bm.getFile("Indexs");
     blockNode *btmp = bm.getBlockHead(ftmp);
     if (btmp )
-    {         
+    {
         char* addressBegin;
         addressBegin = bm.get_content(*btmp);
-        IndexInfo * i = addressBegin;
-        for(int j = 0 ;j<(bm.get_usingSize(*btmp)/sizeof(IndexInfo);j++)
+        IndexInfo * i = (IndexInfo *)addressBegin;
+        for(int j = 0 ;j<(bm.get_usingSize(*btmp)/sizeof(IndexInfo));j++)
         {
             if((*i).tableName==tableName)
             {
-                (*indexNameVector).push_back((*i).indexName);           
+                (*indexNameVector).push_back((*i).indexName);
             }
-            i += sizeof(IndexInfo);
+            i ++;
         }
         return 1;
     }
-    
+
     return 0;
 }
 
@@ -128,10 +144,10 @@ int CatalogManager::deleteValue(string tableName, int deleteNum)
 {
     fileNode *ftmp = bm.getFile(tableName.c_str());
     blockNode *btmp = bm.getBlockHead(ftmp);
-    
+
     if (btmp)
     {
-            
+
         char* addressBegin = bm.get_content(*btmp) ;
         int recordNum = *addressBegin;
         if(recordNum<deleteNum)
@@ -151,10 +167,10 @@ int CatalogManager::insertRecord(string tableName, int recordNum)
 {
     fileNode *ftmp = bm.getFile(tableName.c_str());
     blockNode *btmp = bm.getBlockHead(ftmp);
-    
+
     if (btmp)
     {
-            
+
         char* addressBegin = bm.get_content(*btmp) ;
         int originalRecordNum = *addressBegin;
         originalRecordNum += recordNum;
@@ -169,10 +185,10 @@ int CatalogManager::getRecordNum(string tableName)
 {
     fileNode *ftmp = bm.getFile(tableName.c_str());
     blockNode *btmp = bm.getBlockHead(ftmp);
-    
+
     if (btmp)
     {
-            
+
         char* addressBegin = bm.get_content(*btmp) ;
         int recordNum = *addressBegin;
         return recordNum;
@@ -180,13 +196,8 @@ int CatalogManager::getRecordNum(string tableName)
     return 0;
 }
 
-
-void addTable(string tableName, vector<Attribute>* attributeVector, string primaryKeyName = "",int primaryKeyLocation = 0)
-
+int CatalogManager::addTable(string tableName, vector<Attribute>* attributeVector, string primaryKeyName = "",int primaryKeyLocation = 0)
 {
-    fileNode *ftmp = bm.getFile(tableName.c_str());
-    blockNode *btmp = bm.getBlockHead(ftmp);
-    
     FILE *fp;
     fp = fopen(tableName.c_str(), "w+");
     if (fp == NULL)
@@ -194,14 +205,17 @@ void addTable(string tableName, vector<Attribute>* attributeVector, string prima
         return 0;
     }
     fclose(fp);
+    fileNode *ftmp = bm.getFile(tableName.c_str());
+    blockNode *btmp = bm.getBlockHead(ftmp);
+
     if (btmp )
     {
         char* addressBegin = bm.get_content(*btmp) ;
-        *addressBegin = 0;// 0record number 
+        *addressBegin = 0;// 0 record number
         addressBegin++;
-        *addressBegin = primaryKeyLocation;//1as what it says
+        *addressBegin = primaryKeyLocation;//1 as what it says
         addressBegin++;
-        *addressBegin = (*attributeVector).size();// 2attribute number
+        *addressBegin = (*attributeVector).size();// 2 attribute number
         addressBegin++;
         //memcpy(addressBegin, attributeVector, (*attributeVector).size()*sizeof(Attribute));
         for(int i= 0;i<(*attributeVector).size();i++)
@@ -220,19 +234,19 @@ int CatalogManager::attributeGet(string tableName, vector<Attribute>* attributeV
 {
     fileNode *ftmp = bm.getFile(tableName.c_str());
     blockNode *btmp = bm.getBlockHead(ftmp);
-    
+
     if (btmp)
     {
-            
+
         char* addressBegin = bm.get_content(*btmp) ;
         addressBegin += 2;
         int size = *addressBegin;
         addressBegin++;
-        Attribute *a = addressBegin;
+        Attribute *a = (Attribute *)addressBegin;
         for(int i =0;i<size;i++)
         {
-            attributeVector.push_back((*a)));
-            a += sizeof(Attribute);
+            attributeVector->push_back(*a);
+            a ++;
         }
 
         return 1;
@@ -244,7 +258,7 @@ int CatalogManager::calcuteLenth(string tableName)
 {
     fileNode *ftmp = bm.getFile(tableName.c_str());
     blockNode *btmp = bm.getBlockHead(ftmp);
-    
+
     if (btmp)
     {
         int singleRecordSize =  0;
@@ -252,7 +266,7 @@ int CatalogManager::calcuteLenth(string tableName)
         addressBegin += 2;
         int size = *addressBegin;
         addressBegin++;
-        Attribute *a = addressBegin;
+        Attribute *a = (Attribute *)addressBegin;
         for(int i =0;i<size;i++)
         {
             if((*a).type==-1)
@@ -272,7 +286,7 @@ int CatalogManager::calcuteLenth(string tableName)
                 cout<<"Catalog data damaged!"<<endl;
                 return 0;
             }
-            a += sizeof(Attribute);
+            a ++;
         }
 
         return singleRecordSize;
@@ -280,7 +294,7 @@ int CatalogManager::calcuteLenth(string tableName)
     return 0;
 }
 
-int CatalogManager::calcuteLenth2(int CatalogManager::type){
+int CatalogManager::calcuteLenth2(int type){
     if (type == Attribute::TYPE_INT) {
         return sizeof(int);
     }
@@ -294,19 +308,19 @@ int CatalogManager::calcuteLenth2(int CatalogManager::type){
 }      //這理我的type改成了int类型，而不是一个String，type类型见attribute.h
 
 // 通过table名和recordContent得到这个table的record的字符传，写入传进的字符串
-void recordStringGet(string tableName, vector<string>* recordContent, char* recordResult)
+void CatalogManager::recordStringGet(string tableName, vector<string>* recordContent, char* recordResult)
 {
     vector<Attribute> attributeVector;
     attributeGet(tableName, &attributeVector);
     char * contentBegin = recordResult;
-    
+
     for(int i = 0; i < attributeVector.size(); i++)
     {
         Attribute attribute = attributeVector[i];
         string content = (*recordContent)[i];
         int type = attribute.type;
         int typeSize = calcuteLenth2(type);
-        
+
         stringstream ss;
         ss << content;
         if (type == Attribute::TYPE_INT)
@@ -328,7 +342,7 @@ void recordStringGet(string tableName, vector<string>* recordContent, char* reco
             //if the content is a string
             memcpy(contentBegin, content.c_str(), typeSize);
         }
-        
+
         contentBegin += typeSize;
     }
     return ;
