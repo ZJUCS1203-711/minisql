@@ -17,6 +17,14 @@ public:
     void indexValueGet(string indexName,string value, blockNode* block){return ;}
 };
 
+<<<<<<< HEAD
+class CatalogManager;
+class RecordManager;
+class API{
+public:
+    RecordManager *rm;
+    CatalogManager *cm;
+=======
 class CatalogManager
 {
 public:
@@ -72,12 +80,14 @@ class RecordManager;
 class API{
 public:
 	RecordManager *rm;
+>>>>>>> 1f361341e68562bf8f4529691f1ac6c493808195
 	API(){}
 	~API(){}
     
     
     void tableDrop(string tableName);
-    void tableCreate(string tableName, vector<Attribute>* attributeVector, string primaryKeyName = "");
+    void tableCreate(string tableName, vector<Attribute>* attributeVector, string primaryKeyName,int primaryKeyLocation);
+
     
     void indexDrop(string indexName);
 	void indexCreate(string indexName, string tableName, string attributeName);

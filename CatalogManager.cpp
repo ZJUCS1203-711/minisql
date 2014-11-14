@@ -1,4 +1,6 @@
 #include"IndexInfo.h"
+
+
 #define UNKNOWN_FILE 8
 #define TABLE_FILE 9
 #define INDEX_FILE 10
@@ -178,7 +180,9 @@ int CatalogManager::getRecordNum(string tableName)
     return 0;
 }
 
+
 void addTable(string tableName, vector<Attribute>* attributeVector, string primaryKeyName = "",int primaryKeyLocation = 0)
+
 {
     fileNode *ftmp = bm.getFile(tableName.c_str());
     blockNode *btmp = bm.getBlockHead(ftmp);
@@ -192,7 +196,6 @@ void addTable(string tableName, vector<Attribute>* attributeVector, string prima
     fclose(fp);
     if (btmp )
     {
-            
         char* addressBegin = bm.get_content(*btmp) ;
         *addressBegin = 0;// 0record number 
         addressBegin++;

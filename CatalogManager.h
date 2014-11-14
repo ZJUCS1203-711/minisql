@@ -17,7 +17,12 @@ public:
     int getRecordNum(string tableName);
     int indexNameListGet(string tableName, vector<string>* indexNameVector);
 
-    void addTable(string tableName, vector<Attribute>* attributeVector, string primaryKeyName = "",int primaryKeyLocation = 0); 
+<<<<<<< HEAD
+    
+=======
+    void addTable(string tableName, vector<Attribute>* attributeVector, string primaryKeyName = "");
+
+>>>>>>> origin/master
 
     int attributeGet(string tableName, vector<Attribute>* attributeVector);  
     int calcuteLenth(string tableName); 

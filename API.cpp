@@ -8,6 +8,7 @@
 
 #include "API.h"
 #include "RecordManager.h"
+#include "CatalogManager.h"
 
 #define UNKNOWN_FILE 8
 #define TABLE_FILE 9
@@ -123,7 +124,7 @@ void API::tableCreate(string tableName, vector<Attribute>* attributeVector, stri
     if(rm->tableCreate(tableName))
     {
         //CatalogManager to create a table information
-        cm->addTable(tableName, attributeVector, primaryKeyName,primaryKeyLocation);
+   //     cm->addTable(tableName, attributeVector, primaryKeyName, primaryKeyLocation);
         cout << "Create table " << tableName << " successfully" << endl;
     }
     
@@ -377,36 +378,6 @@ int API::typeSizeGet(int type)
 
 /**
  *
- * get the vector of a attribute‘s name in a table
- * @param tableName:  name of table
- * @param attributeNameVector:  a point to vector of attributeName(which would change)
- */
-int API::attributeNameGet(string tableName, vector<string>* attributeNameVector)
-{
-    if (tableExist(tableName)) {
-        return 0;
-    }
-    return cm->attributeNameGet(tableName, attributeNameVector);
-}
-
-
-/**
- *
- * get the vector of a attribute‘s type in a table
- * @param tableName:  name of table
- * @param attributeNameVector:  a point to vector of attributeType(which would change)
- */
-int API::attributeTypeGet(string tableName, vector<string>* attributeTypeVector)
-{
-    if (tableExist(tableName)) {
-        return 0;
-    }
-    return cm->attributeTypeGet(tableName, attributeTypeVector);
-}
-
-
-/**
- *
  * get the vector of a all name of index in the table
  * @param tableName:  name of table
  * @param indexNameVector:  a point to vector of indexName(which would change)
@@ -454,6 +425,12 @@ int API::attributeGet(string tableName, vector<Attribute>* attributeVector)
 
 }
 
+/**
+ *
+ * insert all index value of a record to index tree
+ * @param recordBegin: point to record begin
+ * @param attributeVector:  a point to vector of attributeType(which would change)
+ */
 void API::recordIndexInsert(char* recordBegin,int recordSize, vector<Attribute>* attributeVector,  int blockOffset)
 {
     char* contentBegin = recordBegin;

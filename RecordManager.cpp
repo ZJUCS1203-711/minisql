@@ -85,6 +85,7 @@ int RecordManager::indexDrop(string indexName)
  * insert a record to table
  * @param tableName: name of table
  * @param record: value of record
+ * @param recordSize: size of the record
  * @return the position of block in the file(-1 represent error)
  */
 int RecordManager::recordInsert(string tableName,char* record, int recordSize)
@@ -139,7 +140,6 @@ int RecordManager::recordAllShow(string tableName, vector<Condition>* conditionV
         {
             int recordBlockNum = recordBlockShow(tableName, conditionVector, btmp);
             count += recordBlockNum;
-            btmp = bm.getNextBlock(ftmp, btmp);
             return count;
         }
         else
@@ -217,7 +217,6 @@ int RecordManager::recordAllFind(string tableName, vector<Condition>* conditionV
         {
             int recordBlockNum = recordBlockFind(tableName, conditionVector, btmp);
             count += recordBlockNum;
-            btmp = bm.getNextBlock(ftmp, btmp);
             return count;
         }
         else
@@ -293,7 +292,6 @@ int RecordManager::recordAllDelete(string tableName, vector<Condition>* conditio
         {
             int recordBlockNum = recordBlockDelete(tableName, conditionVector, btmp);
             count += recordBlockNum;
-            btmp = bm.getNextBlock(ftmp, btmp);
             return count;
         }
         else
@@ -356,6 +354,13 @@ int RecordManager::recordBlockDelete(string tableName,  vector<Condition>* condi
     return count;
 }
 
+/**
+ *
+ * insert the index of all record of the table
+ * @param tableName: name of table
+ * @param indexName: name of index
+ * @return int: the number of the record meet requirements(-1 represent error)
+ */
 int RecordManager::indexRecordAllAlreadyInsert(string tableName,string indexName)
 {
     fileNode *ftmp = bm.getFile(tableFileNameGet(tableName).c_str());
@@ -371,7 +376,6 @@ int RecordManager::indexRecordAllAlreadyInsert(string tableName,string indexName
         {
             int recordBlockNum = indexRecordBlockAlreadyInsert(tableName, indexName, btmp);
             count += recordBlockNum;
-            btmp = bm.getNextBlock(ftmp, btmp);
             return count;
         }
         else
@@ -385,6 +389,15 @@ int RecordManager::indexRecordAllAlreadyInsert(string tableName,string indexName
     return -1;
 }
 
+
+/**
+ *
+ * insert the index of a record of a table in a block
+ * @param tableName: name of table
+ * @param indexName: name of index
+ * @param block: search record in the block
+ * @return int: the number of the record meet requirements in the block(-1 represent error)
+ */
  int RecordManager::indexRecordBlockAlreadyInsert(string tableName,string indexName,  blockNode* block)
 {
     //if block is null, return -1

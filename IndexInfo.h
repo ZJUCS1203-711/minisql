@@ -8,7 +8,7 @@ class IndexInfo
 {
 public:
 	IndexInfo(string i,string t,string a)
-	{indexName = i;tableName = t;Attribute = a}
+    {indexName = i;tableName = t;Attribute = a;}
     string indexName;       
     string tableName;  
     string Attribute;              
