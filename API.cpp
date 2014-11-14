@@ -133,13 +133,12 @@ void API::tableCreate(string tableName, vector<Attribute>* attributeVector, stri
         return;
     }
     
-    
-    
     //RecordManager to create a table file
     if(rm->tableCreate(tableName))
     {
         //CatalogManager to create a table information
-   //     cm->addTable(tableName, attributeVector, primaryKeyName, primaryKeyLocation);
+        cm->addTable(tableName, attributeVector, primaryKeyName, primaryKeyLocation);
+   
         cout << "Create table " << tableName << " successfully" << endl;
     }
     
@@ -538,7 +537,6 @@ void API::tableAttributePrint(vector<Attribute>* attributeVector)
         cout << attribute.name << " ";
     }
 }
-
 
 ///**
 // *
