@@ -174,6 +174,7 @@ void IndexManager::insertIndex(string indexName,string key,offsetNumber blockOff
         }
         else
         {
+            itInt->second->debug_print();
             itInt->second->insertKey(kt.intTmp,blockOffset);
         }
     }
@@ -187,6 +188,7 @@ void IndexManager::insertIndex(string indexName,string key,offsetNumber blockOff
         }
         else
         {
+            itFloat->second->debug_print();
             itFloat->second->insertKey(kt.floatTmp,blockOffset);
             
         }
@@ -221,6 +223,7 @@ void IndexManager::deleteIndexByKey(string indexName,string key,int type)
         }
         else
         {
+            itInt->second->debug_print();
             itInt->second->deleteKey(kt.intTmp);
         }
     }
@@ -234,6 +237,7 @@ void IndexManager::deleteIndexByKey(string indexName,string key,int type)
         }
         else
         {
+            itFloat->second->debug_print();
             itFloat->second->deleteKey(kt.floatTmp);
             
         }
@@ -248,7 +252,7 @@ void IndexManager::deleteIndexByKey(string indexName,string key,int type)
         }
         else
         {
-           // itString->second->debug_print();
+            itString->second->debug_print();
             itString->second->deleteKey(key);
         }
     }
