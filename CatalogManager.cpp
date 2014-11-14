@@ -27,6 +27,29 @@ int CatalogManager::dropTable(string tableName)
     }
     return 1;
 }
+int CatalogManager::getIndexType(string indexName)
+{
+    fileNode *ftmp = bm.getFile("Indexs");
+    blockNode *btmp = bm.getBlockHead(ftmp);
+    if (btmp )
+    {
+        char* addressBegin;
+        addressBegin = bm.get_content(*btmp);
+        IndexInfo * i = (IndexInfo *)addressBegin;
+        int flag = UNKNOWN_FILE;
+        for(int j = 0 ;j<(bm.get_usingSize(*btmp)/sizeof(IndexInfo));j++)
+        {
+            if((*i).indexName==indexName)
+            {
+                return i->type;
+            }
+            i ++;
+        }
+        return -2;
+    }
+
+    return 0;
+}
 int CatalogManager::addIndex(string indexName,string tableName,string Attribute)
 {
     fileNode *ftmp = bm.getFile("Indexs");
