@@ -6,7 +6,7 @@
 #include <time.h>
 int main(int argc,char * argv[])
 {
-    clock_t start, finish;
+    clock_t start = 0, finish;
 
     cout<<"*******************Welcome to use our MiniSQL**********************"<<endl;
     cout<<"******************* Author: Deng & Xu & Woo **********************"<<endl;
