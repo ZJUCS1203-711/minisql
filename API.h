@@ -17,105 +17,18 @@ public:
     void indexValueGet(string indexName,string value, blockNode* block){return ;}
 };
 
-class CatalogManager
-{
-public:
-    //--------------------api need to change
-    int addIndex(string indexName,string tableName,string colName){return 1;}
-    int findFile(string fileName){return  1;}
-    int dropTable(string tableName){return 1;}
-    int dropIndex(string index){return 1;}
-    int deleteValue(string tableName){return 1;}
-    int deleteValue(string tableName, int deleteNum){return 1;}
-    int insertRecord(string tableName, int recordNum){return 1;}
-    int getRecordNum(string tableName){return 2000;}
-    int indexNameListGet(string tableName, vector<string>* indexNameVector){return 1;}
-    
-    
-    //--------------我修改比较大的
-    void addTable(string tableName, vector<Attribute>* attributeVector, string primaryKeyName = ""){}
-    
-    //使传进来的地址得到一个table的属性名称的vector
-    //输出 是否得到成功
-    //输入 table的名称，table的属性名称列表的地址
-    int attributeNameGet(string tableName, vector<string>* attributeNameVector){return 1;}
-    
-    //使传进来的地址得到一个table的属性类型的vector
-    //输出 是否得到成功
-    //输入 table的名称，table的属性类型列表的地址
-    int attributeTypeGet(string tableName, vector<string>* attributeTypeVector){return 1;}
-    
-    //使传进来的地址得到一个table的属性的vector
-    //输出 是否得到成功
-    //输入 table的名称，table的属性列表的地址
-    int attributeGet(string tableName, vector<Attribute>* attributeVector){return 1;}
-    
-    int calcuteLenth(string tableName){return 1;} //得到一个table的记录的大小
-    int calcuteLenth2(int type){
-        if (type == Attribute::TYPE_INT) {
-            return sizeof(int);
-        }
-        else if (type == Attribute::TYPE_FLOAT)
-        {
-            return sizeof(float);
-        }
-        else{
-            return (int) sizeof(char[type]);
-        }
-    }      //這理我的type改成了int类型，而不是一个String，type类型见attribute.h
-    
-    // 通过table名和recordContent得到这个table的record的字符传，写入传进的字符串
-    void recordStringGet(string tableName, vector<string>* recordContent, char* recordResult)
-    {
-        vector<Attribute> attributeVector;
-        attributeGet(tableName, &attributeVector);
-        char * contentBegin = recordResult;
-        
-        for(int i = 0; i < attributeVector.size(); i++)
-        {
-            Attribute attribute = attributeVector[i];
-            string content = (*recordContent)[i];
-            int type = attribute.type;
-            int typeSize = calcuteLenth2(type);
-            
-            stringstream ss;
-            ss << content;
-            if (type == Attribute::TYPE_INT)
-            {
-                //if the content is a int
-                int intTmp;
-                ss >> intTmp;
-                memcpy(contentBegin, ((char*)&intTmp), typeSize);
-            }
-            else if (type == Attribute::TYPE_FLOAT)
-            {
-                //if the content is a float
-                float intTmp;
-                ss >> intTmp;
-                memcpy(contentBegin, ((char*)&intTmp), typeSize);
-            }
-            else
-            {
-                //if the content is a string
-                memcpy(contentBegin, content.c_str(), typeSize);
-            }
-            
-            contentBegin += typeSize;
-        }
-        return ;
-    }
-};
-
+class CatalogManager;
 class RecordManager;
 class API{
 public:
-	RecordManager *rm;
+    RecordManager *rm;
+    CatalogManager *cm;
 	API(){}
 	~API(){}
     
     
     void tableDrop(string tableName);
-    void tableCreate(string tableName, vector<Attribute>* attributeVector, string primaryKeyName = "");
+    void tableCreate(string tableName, vector<Attribute>* attributeVector, string primaryKeyName,int primaryKeyLocation);
     
     void indexDrop(string indexName);
 	void indexCreate(string indexName, string tableName, string attributeName);
@@ -133,8 +46,7 @@ public:
 
 	int typeSizeGet(int type);
     
-    int attributeNameGet(string tableName, vector<string>* attributeNameVector);
-	int attributeTypeGet(string tableName, vector<string>* attributeTypeVector);
+    
     int attributeGet(string tableName, vector<Attribute>* attributeVector);
 
     void indexValueInsert(string indexName, string value, int blockOffset);
@@ -142,11 +54,6 @@ public:
     void indexInsert(string indexName, char* value, int type, int blockOffset);
     void recordIndexDelete(char* recordBegin,int recordSize, vector<Attribute>* attributeVector, int blockOffset);
     void recordIndexInsert(char* recordBegin,int recordSize, vector<Attribute>* attributeVector, int blockOffset);
-    
-    int changeToInt(string value)
-    {
-        
-    }
     
 private:
     int tableExist(string tableName);

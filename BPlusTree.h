@@ -12,21 +12,23 @@
 #include <stdio.h>
 #include "BufferManager.h"
 #include "Minisql.h"
+#include <string>
 using namespace std;
 
+
+static size_t degree = 5;
 //**********************TreeNode***************************//
 typedef int offsetNumber;
 
-template <class KeyType>
+template <typename KeyType>
 class TreeNode{
-private:
-    size_t degree;
+public:
     size_t count; // the count of keys
     TreeNode* parent;
-    vector <KeyType> keys;
+    std::vector <KeyType> keys;
     
-    vector <TreeNode*> childs;
-    vector <offsetNumber> vals;
+    std::vector <TreeNode*> childs;
+    std::vector <offsetNumber> vals;
     
     TreeNode* nextLeafNode; //指向下一个叶子节点
     
@@ -34,8 +36,9 @@ private:
     
 public:
     //创建新节点，参数为false表示创建枝干节点，否则为叶子节点
-    TreeNode(size_t m_degree,bool newLeaf=false);
+    TreeNode(bool newLeaf=false);
     ~TreeNode();
+    //friend class BPlusTree<KeyType>
     
 //TODO: 测试完之后改为private
 public:
@@ -52,9 +55,63 @@ public:
 };
 
 
-//TODO: 定义b+树
 //**********************BplusTree***************************//
 
+template <typename KeyType>
+class BPlusTree
+{
+// TODO:测试完改为private
+public:
+    typedef TreeNode<KeyType>* Node;
 
-#include "BPlusTree_imp.h"
+    struct searchNodeParse
+    {
+        Node pNode; //找到节点的指针
+        size_t index; // 节点关键字序号
+        bool ifFound; // 是否找到
+        
+    };
+private:
+    string name;
+    Node root;
+    Node leafHead; //叶子指针起点
+    size_t keyCount; //key数量
+    size_t level; //层数
+    size_t nodeCount; //节点数
+    
+public:
+    BPlusTree(string m_name);
+    ~BPlusTree();
+
+    offsetNumber search(KeyType& key); // search the value of specific key
+    bool insertKey(KeyType &key,offsetNumber val);
+    bool deleteKey(KeyType &key);
+    
+    void dropTree();
+    
+    //TODO:processes about disk
+    void readFromDisk();
+    void writenbackToDisk();
+
+private:
+    void init_tree();//初始化树
+    bool adjustAfterinsert(Node pNode);
+    bool adjustAfterDelete(Node pNode);
+    //void deleteNode(Node pNode);
+    void findToLeaf(Node pNode,KeyType key,searchNodeParse &snp);
+    
+//DEBUG
+public:
+    void debug_print();
+
+    void debug_print_node(Node pNode);
+
+
+};
+
+
+
+
+#include "BPlusTree_imp.h" // the implement of BPlusTree function
+
 #endif /* defined(__Minisql__BPlusTree__) */
