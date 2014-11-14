@@ -12,6 +12,7 @@ public:
     string indexName;
     string tableName;
     string Attribute;
+    int type;
 };
 
 #endif

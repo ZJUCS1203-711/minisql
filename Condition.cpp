@@ -101,3 +101,10 @@ bool Condition::ifRight(string content)
             break;
     }
 }
+
+Condition::Condition(string a,string v,int o) {
+    attributeName = a;
+    value = v;
+    operate = o;
+}
+

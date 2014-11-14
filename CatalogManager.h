@@ -21,7 +21,7 @@ public:
     int indexNameListGet(string tableName, vector<string>* indexNameVector);
 
     int addTable(string tableName, vector<Attribute>* attributeVector, string primaryKeyName ,int primaryKeyLocation );
-
+    int getIndexType(string indexName);
     int attributeGet(string tableName, vector<Attribute>* attributeVector);
     int calcuteLenth(string tableName);
     int calcuteLenth2(int type);
