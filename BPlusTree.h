@@ -16,7 +16,6 @@
 using namespace std;
 
 
-
 static BufferManager bm;
 //**********************TreeNode***************************//
 typedef int offsetNumber;
@@ -35,7 +34,6 @@ public:
     
     bool isLeaf; //是否叶子标识
     
-
 private:
     int degree;
     
@@ -45,7 +43,6 @@ public:
     ~TreeNode();
     //friend class BPlusTree<KeyType>
     
-//TODO: 测试完之后改为private
 public:
     bool isRoot();
     bool search(KeyType key,size_t &index);//查找一个key，返回对应的索引值
@@ -94,9 +91,8 @@ public:
     bool insertKey(KeyType &key,offsetNumber val);
     bool deleteKey(KeyType &key);
     
-    void dropTree();
+    void dropTree(Node node);
     
-    //TODO:processes about disk
     void readFromDiskAll();
     void writtenbackToDiskAll();
     void readFromDisk(blockNode* btmp);

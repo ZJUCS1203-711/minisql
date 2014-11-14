@@ -29,7 +29,9 @@ TreeNode<KeyType>::TreeNode(int m_degree,bool newLeaf):count(0),parent(NULL),nex
 template <class KeyType>
 TreeNode<KeyType>::~TreeNode()
 {
+    
 }
+
 
 template <class KeyType>
 bool TreeNode<KeyType>::isRoot()
@@ -79,7 +81,6 @@ bool TreeNode<KeyType>::search(KeyType key,size_t &index)
                 }
             }
         } // end sequential search
-
         else if(count > 20) // too many keys, binary search. 2* log(n,2) < (1+n)/2
         {
             size_t left = 0, right = count - 1, pos = 0;
@@ -99,6 +100,10 @@ bool TreeNode<KeyType>::search(KeyType key,size_t &index)
                 {
                     right = pos;
                 }
+                
+                
+                
+                
             } // end while
             
             // right == left + 1
@@ -280,7 +285,6 @@ bool TreeNode<KeyType>::removeAt(size_t index)
             for(size_t i = index;i < count-1;i ++)
                 keys[i] = keys[i+1];
 
-            //TODO:这里好像不对
             for(size_t i = index+1;i < count;i ++)
                 childs[i] = childs[i+1];
             
@@ -292,6 +296,7 @@ bool TreeNode<KeyType>::removeAt(size_t index)
         return true;
     }
 }
+
 
 //debug
 template <class KeyType>
@@ -343,7 +348,7 @@ BPlusTree<KeyType>::BPlusTree(string m_name,int keysize,int m_degree):fileName(m
 template <class KeyType>
 BPlusTree<KeyType>:: ~BPlusTree()
 {
-    dropTree();
+    dropTree(root);
 }
 
 template <class KeyType>
@@ -421,7 +426,7 @@ bool BPlusTree<KeyType>::insertKey(KeyType &key,offsetNumber val)
         snp.pNode->add(key,val);
         if(snp.pNode->count == degree)
         {
-            adjustAfterinsert(snp.pNode); //TODO:需要考虑level,nodeCount
+            adjustAfterinsert(snp.pNode);
         }
         keyCount ++;
         return true;
@@ -817,9 +822,21 @@ bool BPlusTree<KeyType>::adjustAfterDelete(Node pNode)
 }
 
 template <class KeyType>
-void BPlusTree<KeyType>::dropTree()
+void BPlusTree<KeyType>::dropTree(Node node)
 {
     //TODO:删除每一个node
+    if(!node->isLeaf) //if it has child
+    {
+        for(size_t i=0;i <= node->count;i++)
+        {
+            dropTree(node->childs[i] );
+            node->childs[i] = NULL;
+        }
+    }
+    delete node;
+    nodeCount --;
+    return;
+    
 }
 
 template <class KeyType>
@@ -896,7 +913,6 @@ void BPlusTree<KeyType>::writtenbackToDiskAll()
     }
     
 }
->>>>>>> 1f361341e68562bf8f4529691f1ac6c493808195
 
 //debug
 template <class KeyType>
