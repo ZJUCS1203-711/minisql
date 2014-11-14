@@ -448,8 +448,8 @@ int Interpreter::interpreter(string s)
 	{ return 1;}
 	else if (strcmp(word.c_str(), "execfile") == 0)
 	{
-		//fileName = getWord(s,&tmp);
-		return 1;
+		string fileName = getWord(s,&tmp);
+		return 2;
 	}
 	else
 	{

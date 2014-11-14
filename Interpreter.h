@@ -8,6 +8,7 @@
 using namespace std;
 class Interpreter{
 public:
+	string fileName ;
 	int interpreter(string s);	
 
 	string getWord(string s, int *st);
