@@ -79,7 +79,22 @@ int CatalogManager::addIndex(string indexName,string tableName,string Attribute)
 
     return 0;
 }
-int CatalogManager::findFile(string fileName)
+int CatalogManager::findTable(string tableName)
+{
+    FILE *fp;
+    fp = fopen(tableName.c_str(), "r");
+    if (fp == NULL)
+    {
+        return 0;
+    }
+    else
+    {
+        fclose(fp);
+        return TABLE_FILE;
+    }
+
+}
+int CatalogManager::findIndex(string fileName)
 {
     fileNode *ftmp = bm.getFile("Indexs");
     blockNode *btmp = bm.getBlockHead(ftmp);
@@ -94,11 +109,6 @@ int CatalogManager::findFile(string fileName)
             if((*i).indexName==fileName)
             {
                 flag = INDEX_FILE;
-                break;
-            }
-            if((*i).tableName==fileName)
-            {
-                flag = TABLE_FILE;
                 break;
             }
             i ++;
