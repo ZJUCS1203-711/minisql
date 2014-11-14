@@ -65,7 +65,45 @@ public:
     }      //這理我的type改成了int类型，而不是一个String，type类型见attribute.h
     
     // 通过table名和recordContent得到这个table的record的字符传，写入传进的字符串
-    void recordStringGet(string tableName, vector<string>* recordContent, char* recordResult){return ;}
+    void recordStringGet(string tableName, vector<string>* recordContent, char* recordResult)
+    {
+        vector<Attribute> attributeVector;
+        attributeGet(tableName, &attributeVector);
+        char * contentBegin = recordResult;
+        
+        for(int i = 0; i < attributeVector.size(); i++)
+        {
+            Attribute attribute = attributeVector[i];
+            string content = (*recordContent)[i];
+            int type = attribute.type;
+            int typeSize = calcuteLenth2(type);
+            
+            stringstream ss;
+            ss << content;
+            if (type == Attribute::TYPE_INT)
+            {
+                //if the content is a int
+                int intTmp;
+                ss >> intTmp;
+                memcpy(contentBegin, ((char*)&intTmp), typeSize);
+            }
+            else if (type == Attribute::TYPE_FLOAT)
+            {
+                //if the content is a float
+                float intTmp;
+                ss >> intTmp;
+                memcpy(contentBegin, ((char*)&intTmp), typeSize);
+            }
+            else
+            {
+                //if the content is a string
+                memcpy(contentBegin, content.c_str(), typeSize);
+            }
+            
+            contentBegin += typeSize;
+        }
+        return ;
+    }
 };
 
 class RecordManager;
@@ -104,6 +142,11 @@ public:
     void indexInsert(string indexName, char* value, int type, int blockOffset);
     void recordIndexDelete(char* recordBegin,int recordSize, vector<Attribute>* attributeVector, int blockOffset);
     void recordIndexInsert(char* recordBegin,int recordSize, vector<Attribute>* attributeVector, int blockOffset);
+    
+    int changeToInt(string value)
+    {
+        
+    }
     
 private:
     int tableExist(string tableName);
