@@ -48,6 +48,7 @@ int Interpreter::interpreter(string s)
 				{
 					string attributeName = word;
 					int type = 0;
+					bool ifUnique = false;
 					// deal with the data type
 					word = getWord(s,&tmp);
 					if (strcmp(word.c_str(), "int") == 0)
@@ -81,9 +82,13 @@ int Interpreter::interpreter(string s)
 						cout<<"Syntax Error: unknown or missing data type!"<<endl;
 						return 0;
 					}
+					word = getWord(s,&tmp);
+					if(strcmp(word.c_str(), "unique") != 0)
+					{
+						ifUnique = true;
+					}
 					Attribute attr(attributeName,type,true);
 					attributeVector.push_back(attr);
-					word = getWord(s,&tmp);
 					if(strcmp(word.c_str(), ",") != 0)
 					{
 						if(strcmp(word.c_str(), ")") != 0){
