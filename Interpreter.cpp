@@ -87,7 +87,7 @@ int Interpreter::interpreter(string s)
 					{
 						ifUnique = true;
 					}
-					Attribute attr(attributeName,type,true);
+					Attribute attr(attributeName,type,ifUnique);
 					attributeVector.push_back(attr);
 					if(strcmp(word.c_str(), ",") != 0)
 					{
