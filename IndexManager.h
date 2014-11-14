@@ -16,6 +16,8 @@
 #include "Attribute.h"
 #include "BPlusTree.h"
 
+
+
 class IndexManager{
 private:
     typedef map<string,BPlusTree<int> *> intMap;
@@ -27,17 +29,18 @@ private:
     intMap indexIntMap;
     stringMap indexStringMap;
     floatMap indexFloatMap;
-    
-    int getDegree(int type);
-
-    int getKeySize(int type);
-    
     struct keyTmp{
         int intTmp;
         float floatTmp;
         string stringTmp;
     };
-    keyTmp& getKey(int type,string key,keyTmp &kt);
+    struct keyTmp kt;
+    
+    int getDegree(int type);
+
+    int getKeySize(int type);
+   
+    void setKey(int type,string key);
     
     
 public:

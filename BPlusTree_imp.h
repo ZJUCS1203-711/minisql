@@ -81,10 +81,10 @@ bool TreeNode<KeyType>::search(KeyType key,size_t &index)
                 }
             }
         } // end sequential search
-        else if(count > 20) // too many keys, binary search
+        else if(count > 20) // too many keys, binary search. 2* log(n,2) < (1+n)/2
         {
             size_t left = 0, right = count - 1, pos = 0;
-            while(right>left)
+            while(right>left+1)
             {
                 pos = (right + left) / 2;
                 if(keys[pos] == key)
@@ -94,12 +94,16 @@ bool TreeNode<KeyType>::search(KeyType key,size_t &index)
                 }
                 else if(keys[pos] < key)
                 {
-                    left = pos + 1;
+                    left = pos;
                 }
                 else if(keys[pos] > key)
                 {
-                    right = pos - 1;
+                    right = pos;
                 }
+                
+                
+                
+                
             } // end while
             
             // right == left + 1
@@ -112,6 +116,11 @@ bool TreeNode<KeyType>::search(KeyType key,size_t &index)
             {
                 index = right;
                 return (keys[right] == key);
+            }
+            else if(keys[right] < key)
+            {
+                index = right ++;
+                return false;
             }
         } // end binary search
     }
@@ -478,6 +487,7 @@ bool BPlusTree<KeyType>::adjustAfterinsert(Node pNode)
 template <class KeyType>
 offsetNumber BPlusTree<KeyType>::search(KeyType& key)
 {
+    if(!root) return -1;
     searchNodeParse snp;
     findToLeaf(root, key, snp);
     if(!snp.ifFound)
@@ -880,6 +890,15 @@ void BPlusTree<KeyType>::writtenbackToDiskAll()
         
         btmp = bm.getNextBlock(file, btmp);
         ntmp = ntmp->nextLeafNode;
+    }
+    while(1)// delete the empty node
+    {
+        if(btmp->ifbottom)
+            break;
+        bm.set_usingSize(*btmp, sizeof(size_t));
+        bm.set_dirty(*btmp);
+        btmp = bm.getNextBlock(file, btmp);
+        
     }
     
 }

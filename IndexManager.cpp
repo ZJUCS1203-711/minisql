@@ -47,7 +47,8 @@ IndexManager::~IndexManager()
 void IndexManager::createIndex(string indexName,int type)
 {
     int keySize = getKeySize(type);
-    int degree = getDegree(type);
+//TODO:    int degree = getDegree(type);
+    int degree = 7;
     if(type == TYPE_INT)
     {
         BPlusTree<int> *tree = new BPlusTree<int>(indexName,keySize,degree);
@@ -115,7 +116,7 @@ void IndexManager::dropIndex(string indexName,int type)
 
 offsetNumber IndexManager::searchIndex(string indexName,string key,int type)
 {
-    keyTmp kt = getKey(type, key, kt);
+    setKey(type, key);
     
     if(type == TYPE_INT)
     {
@@ -154,6 +155,7 @@ offsetNumber IndexManager::searchIndex(string indexName,string key,int type)
         }
         else
         {
+       //     itString->second->debug_print();
             return itString->second->search(key);
         }
     }
@@ -161,7 +163,7 @@ offsetNumber IndexManager::searchIndex(string indexName,string key,int type)
 
 void IndexManager::insertIndex(string indexName,string key,offsetNumber blockOffset,int type)
 {
-    keyTmp kt = getKey(type, key, kt);
+    setKey(type, key);
 
     if(type == TYPE_INT)
     {
@@ -201,13 +203,14 @@ void IndexManager::insertIndex(string indexName,string key,offsetNumber blockOff
         else
         {
             itString->second->insertKey(key,blockOffset);
+            itString->second->debug_print();
         }
     }
 }
 
 void IndexManager::deleteIndexByKey(string indexName,string key,int type)
 {
-    keyTmp kt = getKey(type, key, kt);
+    setKey(type, key);
 
     if(type == TYPE_INT)
     {
@@ -219,7 +222,6 @@ void IndexManager::deleteIndexByKey(string indexName,string key,int type)
         }
         else
         {
-            itInt->second->debug_print();
             itInt->second->deleteKey(kt.intTmp);
         }
     }
@@ -247,6 +249,7 @@ void IndexManager::deleteIndexByKey(string indexName,string key,int type)
         }
         else
         {
+           // itString->second->debug_print();
             itString->second->deleteKey(key);
         }
     }
@@ -274,21 +277,19 @@ int IndexManager::getKeySize(int type)
     }
 }
 
-IndexManager::keyTmp& IndexManager::getKey(int type,string key,keyTmp &kt)
+void IndexManager::setKey(int type,string key)
 {
     stringstream ss;
     ss << key;
-    if(type == TYPE_INT)
-        ss >> kt.intTmp;
-    else if(type == TYPE_FLOAT)
-        ss >> kt.floatTmp;
+    if(type == this->TYPE_INT)
+        ss >> this->kt.intTmp;
+    else if(type == this->TYPE_FLOAT)
+        ss >> this->kt.floatTmp;
     else if(type > 0)
-        ss >> kt.stringTmp;
+        ss >> this->kt.stringTmp;
     else
         cout << "Error: in getKey: invalid type" << endl;
-    
-    return kt;
-    
+
 }
 
 
