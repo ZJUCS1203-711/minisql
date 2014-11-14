@@ -1,11 +1,8 @@
 #include"IndexInfo.h"
-#include "CatalogManager.h"
-#include "Minisql.h"
+
 
 #define UNKNOWN_FILE 8
 #define TABLE_FILE 9
-
-
 #define INDEX_FILE 10
 int CatalogManager::dropTable(string tableName)
 {
@@ -183,7 +180,9 @@ int CatalogManager::getRecordNum(string tableName)
     return 0;
 }
 
-void CatalogManager::addTable(string tableName, vector<Attribute>* attributeVector, string primaryKeyName = "",int primaryKeyLocation = 0)
+
+void addTable(string tableName, vector<Attribute>* attributeVector, string primaryKeyName = "",int primaryKeyLocation = 0)
+
 {
     fileNode *ftmp = bm.getFile(tableName.c_str());
     blockNode *btmp = bm.getBlockHead(ftmp);

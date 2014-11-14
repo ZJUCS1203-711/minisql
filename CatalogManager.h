@@ -6,8 +6,6 @@
 using namespace std;
 class CatalogManager
 {
-    
-    
 public:
     int addIndex(string indexName,string tableName,string attributeName);
     int findFile(string fileName);
@@ -19,7 +17,8 @@ public:
     int getRecordNum(string tableName);
     int indexNameListGet(string tableName, vector<string>* indexNameVector);
 
-    void addTable(string tableName, vector<Attribute>* attributeVector, string primaryKeyName = "", int primaryKeyLocation = 0);
+    void addTable(string tableName, vector<Attribute>* attributeVector, string primaryKeyName = "");
+
 
     int attributeGet(string tableName, vector<Attribute>* attributeVector);  
     int calcuteLenth(string tableName); 

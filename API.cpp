@@ -14,6 +14,7 @@
 #define TABLE_FILE 9
 #define INDEX_FILE 10
 
+CatalogManager *cm;
 IndexManager* im;
 
 /**
@@ -123,7 +124,7 @@ void API::tableCreate(string tableName, vector<Attribute>* attributeVector, stri
     if(rm->tableCreate(tableName))
     {
         //CatalogManager to create a table information
-        cm->addTable(tableName, attributeVector, primaryKeyName, primaryKeyLocation);
+   //     cm->addTable(tableName, attributeVector, primaryKeyName, primaryKeyLocation);
         cout << "Create table " << tableName << " successfully" << endl;
     }
     

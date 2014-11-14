@@ -5,14 +5,21 @@
 //  Created by 邓永辉 on 14/11/3.
 //  Copyright (c) 2014年 邓永辉. All rights reserved.
 //
+<<<<<<< HEAD
 //
 #include <iostream>
 #include "API.h"
 #include "RecordManager.h"
+=======
+
+#include <iostream>
+#include "API.h"
+>>>>>>> 1f361341e68562bf8f4529691f1ac6c493808195
 using namespace std;
 
 int main()
 {
+<<<<<<< HEAD
     API api;
     RecordManager rm;
     api.rm = &rm;
@@ -74,3 +81,15 @@ int main()
     
     return 0;
 }
+=======
+    cout << "Hello, World!\n";
+    return 0;
+    API api;
+    vector<Condition> conditionVector;
+    api.recordShow("aa", conditionVector);
+    string a = "";
+    a = "sdf";
+    cout << a;
+    
+}
+>>>>>>> 1f361341e68562bf8f4529691f1ac6c493808195

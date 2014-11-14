@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <map>
 #include <string>
+#include <sstream>
+#include "Attribute.h"
 #include "BPlusTree.h"
 
 class IndexManager{
@@ -20,15 +22,25 @@ private:
     typedef map<string,BPlusTree<string> *> stringMap;
     typedef map<string,BPlusTree<float> *> floatMap;
 
-    int static const TYPE_FLOAT = -1;
-    int static const TYPE_INT = 0; // other values mean the size of the char.Eg, 4 means char(4);
-    
+    int static const TYPE_FLOAT = Attribute::TYPE_FLOAT;
+    int static const TYPE_INT = Attribute::TYPE_INT; // other values mean the size of the char.Eg, 4 means char(4);
     intMap indexIntMap;
     stringMap indexStringMap;
     floatMap indexFloatMap;
+    struct keyTmp{
+        int intTmp;
+        float floatTmp;
+        string stringTmp;
+    };
+    struct keyTmp kt;
     
     int getDegree(int type);
 
+    int getKeySize(int type);
+   
+    void setKey(int type,string key);
+    
+    
 public:
     IndexManager();
     ~IndexManager();

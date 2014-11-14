@@ -15,7 +15,7 @@ using namespace std;
 //******** The definition of the functions of the class TreeNode **********
 
 template <class KeyType>
-TreeNode<KeyType>::TreeNode(bool newLeaf):count(0),parent(NULL),nextLeafNode(NULL),isLeaf(newLeaf)
+TreeNode<KeyType>::TreeNode(int m_degree,bool newLeaf):count(0),parent(NULL),nextLeafNode(NULL),isLeaf(newLeaf),degree(m_degree)
 {
     for(size_t i = 0;i < degree+1;i ++)
     {
@@ -79,10 +79,11 @@ bool TreeNode<KeyType>::search(KeyType key,size_t &index)
                 }
             }
         } // end sequential search
-        else if(count > 20) // too many keys, binary search
+
+        else if(count > 20) // too many keys, binary search. 2* log(n,2) < (1+n)/2
         {
             size_t left = 0, right = count - 1, pos = 0;
-            while(right>left)
+            while(right>left+1)
             {
                 pos = (right + left) / 2;
                 if(keys[pos] == key)
@@ -92,11 +93,11 @@ bool TreeNode<KeyType>::search(KeyType key,size_t &index)
                 }
                 else if(keys[pos] < key)
                 {
-                    left = pos + 1;
+                    left = pos;
                 }
                 else if(keys[pos] > key)
                 {
-                    right = pos - 1;
+                    right = pos;
                 }
             } // end while
             
@@ -110,6 +111,11 @@ bool TreeNode<KeyType>::search(KeyType key,size_t &index)
             {
                 index = right;
                 return (keys[right] == key);
+            }
+            else if(keys[right] < key)
+            {
+                index = right ++;
+                return false;
             }
         } // end binary search
     }
@@ -129,7 +135,7 @@ template <class KeyType>
 TreeNode<KeyType>* TreeNode<KeyType>::splite(KeyType &key)
 {
     size_t minmumNode = (degree - 1) / 2;
-    TreeNode* newNode = new TreeNode(this->isLeaf);
+    TreeNode* newNode = new TreeNode(degree,this->isLeaf);
     if(newNode == NULL)
     {
         cout << "Problems in allocate momeory of TreeNode in splite node of " << key << endl;
@@ -287,6 +293,7 @@ bool TreeNode<KeyType>::removeAt(size_t index)
     }
 }
 
+//debug
 template <class KeyType>
 void TreeNode<KeyType>::debug_print()
 {
@@ -327,10 +334,10 @@ void TreeNode<KeyType>::debug_print()
 
 
 template <class KeyType>
-BPlusTree<KeyType>::BPlusTree(string m_name):name(m_name),keyCount(0),level(0),nodeCount(0),root(NULL),leafHead(NULL)
+BPlusTree<KeyType>::BPlusTree(string m_name,int keysize,int m_degree):fileName(m_name),keyCount(0),level(0),nodeCount(0),root(NULL),leafHead(NULL),keySize(keysize),file(NULL),degree(m_degree)
 {
     init_tree();
-  //  readFromDisk();
+    readFromDiskAll();
 }
 
 template <class KeyType>
@@ -342,7 +349,7 @@ BPlusTree<KeyType>:: ~BPlusTree()
 template <class KeyType>
 void BPlusTree<KeyType>::init_tree()
 {
-    root = new TreeNode<KeyType>(true);
+    root = new TreeNode<KeyType>(degree,true);
     keyCount = 0;
     level = 1;
     nodeCount = 1;
@@ -430,7 +437,7 @@ bool BPlusTree<KeyType>::adjustAfterinsert(Node pNode)
     
     if(pNode->isRoot()) // the node is the root
     {
-        Node root = new TreeNode<KeyType>(false);
+        Node root = new TreeNode<KeyType>(degree,false);
         if(root == NULL)
         {
             cout << "Error: can not allocate memory for the new root in adjustAfterinsert" << endl;
@@ -474,6 +481,7 @@ bool BPlusTree<KeyType>::adjustAfterinsert(Node pNode)
 template <class KeyType>
 offsetNumber BPlusTree<KeyType>::search(KeyType& key)
 {
+    if(!root) return -1;
     searchNodeParse snp;
     findToLeaf(root, key, snp);
     if(!snp.ifFound)
@@ -493,7 +501,7 @@ bool BPlusTree<KeyType>::deleteKey(KeyType &key)
     searchNodeParse snp;
     if(!root)
     {
-        cout << "ERROR: In deleteKey, no nodes in the tree " << name << "!" << endl;
+        cout << "ERROR: In deleteKey, no nodes in the tree " << fileName << "!" << endl;
         return false;
     }
     else
@@ -501,7 +509,7 @@ bool BPlusTree<KeyType>::deleteKey(KeyType &key)
         findToLeaf(root, key, snp);
         if(!snp.ifFound)
         {
-            cout << "ERROR: In deleteKey, no keys in the tree " << name << "!" << endl;
+            cout << "ERROR: In deleteKey, no keys in the tree " << fileName << "!" << endl;
             return false;
         }
         else // find the key in the leaf node
@@ -811,17 +819,91 @@ bool BPlusTree<KeyType>::adjustAfterDelete(Node pNode)
 template <class KeyType>
 void BPlusTree<KeyType>::dropTree()
 {
-    //writenbackToDisk();
+    //TODO:删除每一个node
+}
+
+template <class KeyType>
+void BPlusTree<KeyType>::readFromDiskAll()
+{
+    file = bm.getFile(fileName.c_str());
+    blockNode* btmp = bm.getBlockHead(file);
+    while (true)
+    {
+        if (btmp == NULL)
+        {
+            return;
+        }
+        
+        readFromDisk(btmp);
+        if(btmp->ifbottom) break;
+        btmp = bm.getNextBlock(file, btmp);
+    }
     
 }
 
+template <class KeyType>
+void BPlusTree<KeyType>::readFromDisk(blockNode* btmp)
+{
+    int valueSize = sizeof(offsetNumber);
+    char* indexBegin = bm.get_content(*btmp);
+    char* valueBegin = indexBegin + keySize;
+    KeyType key;
+    offsetNumber value;
+    
+    while(valueBegin - bm.get_content(*btmp) < bm.get_usingSize(*btmp))
+    // there are available position in the block
+    {
+        key = *(KeyType*)indexBegin;
+        value = *(offsetNumber*)valueBegin;
+        insertKey(key, value);
+        valueBegin += keySize + valueSize;
+        indexBegin += keySize + valueSize;
+    }
+    
+}
+
+template <class KeyType>
+void BPlusTree<KeyType>::writtenbackToDiskAll()
+{
+    blockNode* btmp = bm.getBlockHead(file);
+    Node ntmp = leafHead;
+    int valueSize = sizeof(offsetNumber);
+    while(ntmp != NULL)
+    {
+        bm.set_usingSize(*btmp, 0);
+        for(int i = 0;i < ntmp->count;i ++)
+        {
+            char* key = (char*)&(ntmp->keys[i]);
+            char* value = (char*)&(ntmp->vals[i]);
+            bm.set_dirty(*btmp);
+            strncpy(bm.get_content(*btmp)+bm.get_usingSize(*btmp),key,keySize);
+            bm.set_usingSize(*btmp, bm.get_usingSize(*btmp) + keySize);
+            strncpy(bm.get_content(*btmp)+bm.get_usingSize(*btmp),value,valueSize);
+            bm.set_usingSize(*btmp, bm.get_usingSize(*btmp) + valueSize);
+        }
+        
+        btmp = bm.getNextBlock(file, btmp);
+        ntmp = ntmp->nextLeafNode;
+    }
+    while(1)// delete the empty node
+    {
+        if(btmp->ifbottom)
+            break;
+        bm.set_usingSize(*btmp, sizeof(size_t));
+        bm.set_dirty(*btmp);
+        btmp = bm.getNextBlock(file, btmp);
+        
+    }
+    
+}
+>>>>>>> 1f361341e68562bf8f4529691f1ac6c493808195
 
 //debug
 template <class KeyType>
 void BPlusTree<KeyType>::debug_print()
 {
     cout << "############DEBUG FOR THE TREE############" << endl;
-    cout << "name:" << name << " root:" << (void*)root << " leafHead:" << (void * )leafHead << " keycount:" << keyCount << " level:" << level << " nodeCount:" << nodeCount << endl;
+    cout << "name:" << fileName << " root:" << (void*)root << " leafHead:" << (void * )leafHead << " keycount:" << keyCount << " level:" << level << " nodeCount:" << nodeCount << endl;
     
     if(root)
         debug_print_node(root);

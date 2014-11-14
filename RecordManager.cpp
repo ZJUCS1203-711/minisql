@@ -389,6 +389,7 @@ int RecordManager::indexRecordAllAlreadyInsert(string tableName,string indexName
     return -1;
 }
 
+
 /**
  *
  * insert the index of a record of a table in a block
