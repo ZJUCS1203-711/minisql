@@ -1,5 +1,4 @@
 #include "Interpreter.h"
-#include "API.h"
 #include "Condition.h"
 #include "Attribute.h"
 #include <string>
@@ -14,7 +13,6 @@ int Interpreter::interpreter(string s)
 
 	int tmp=0;
 	string word;
-	API ap;
 
 	word = getWord(s, &tmp);
 	if (strcmp(word.c_str(), "create") == 0)
@@ -83,16 +81,17 @@ int Interpreter::interpreter(string s)
 						return 0;
 					}
 					word = getWord(s,&tmp);
-					if(strcmp(word.c_str(), "unique") != 0)
+					if(strcmp(word.c_str(), "unique") == 0)
 					{
 						ifUnique = true;
+                        word = getWord(s,&tmp);
 					}
 					Attribute attr(attributeName,type,ifUnique);
 					attributeVector.push_back(attr);
 					if(strcmp(word.c_str(), ",") != 0)
 					{
 						if(strcmp(word.c_str(), ")") != 0){
-							cout<<"Syntax Error!"<<endl;
+							cout<<"Syntax Error for ,!"<<endl;
 							return 0;
 						}
 						else
@@ -155,7 +154,7 @@ int Interpreter::interpreter(string s)
 					return 0;
 				}
 
-				ap.tableCreate(tableName,&attributeVector,primaryKey,primaryKeyLocation);
+				ap->tableCreate(tableName,&attributeVector,primaryKey,primaryKeyLocation);
 				return 1;
 			}
 		}
@@ -191,7 +190,7 @@ int Interpreter::interpreter(string s)
 				word = getWord(s,&tmp);
 				if (strcmp(word.c_str(),")") != 0)
 					throw SyntaxException();
-				ap.indexCreate(indexName,tableName,attributeName);
+				ap->indexCreate(indexName,tableName,attributeName);
 				return 1;
 			} catch(SyntaxException&) {
 				cout<<"Syntax Error!"<<endl;
@@ -238,7 +237,7 @@ int Interpreter::interpreter(string s)
 		word = getWord(s,&tmp);
 		if (word.empty())	// without condition
 		{
-			ap.recordShow(tableName);
+			ap->recordShow(tableName);
 			return 1;
 		}
 		else if (strcmp(word.c_str(),"where") == 0)
@@ -285,7 +284,7 @@ int Interpreter::interpreter(string s)
 					return 0;
 				}
 			}
-			ap.recordShow(tableName,&conditionVector);
+			ap->recordShow(tableName,&conditionVector);
 			return 1;
 		}
 	}
@@ -301,7 +300,7 @@ int Interpreter::interpreter(string s)
 			word = getWord(s,&tmp);
 			if (!word.empty())
 			{
-				ap.tableDrop(word);
+				ap->tableDrop(word);
 				return 1;
 			}
 			else
@@ -315,7 +314,7 @@ int Interpreter::interpreter(string s)
 			word = getWord(s,&tmp);
 			if (!word.empty())
 			{
-				ap.indexDrop(word);
+				ap->indexDrop(word);
 				return 1;
 			}
 			else
@@ -355,7 +354,7 @@ int Interpreter::interpreter(string s)
 		word = getWord(s,&tmp);
 		if (word.empty())	// without condition
 		{
-			ap.recordDelete(tableName);
+			ap->recordDelete(tableName);
 			return 1;
 		}
 		else if (strcmp(word.c_str(),"where") == 0)
@@ -402,7 +401,7 @@ int Interpreter::interpreter(string s)
 					return 0;
 				}
 			}
-			ap.recordDelete(tableName, &conditionVector);
+			ap->recordDelete(tableName, &conditionVector);
 			return 1;
 		}
 	}
@@ -441,7 +440,9 @@ int Interpreter::interpreter(string s)
 			cout<<"Syntax Error!"<<endl;
 			return 0;
 		}
-		ap.recordInsert(tableName,&valueVector);
+        for(int k = 0;k<valueVector.size();k++)
+            cout<<valueVector[k]<<endl;
+		ap->recordInsert(tableName,&valueVector);
 		return 1;
 	}
 
@@ -473,7 +474,7 @@ string Interpreter::getWord(string s, int *tmp)
 	string word;
 	int idx1,idx2;
 
-	while ((s[*tmp] == ' ' || s[*tmp] == 10) && s[*tmp] != 0)
+	while ((s[*tmp] == ' ' || s[*tmp] == 10  || s[*tmp] == '\t') && s[*tmp] != 0)
 	{
 		(*tmp)++;
 	}

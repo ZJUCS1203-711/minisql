@@ -282,8 +282,6 @@ void API::recordInsert(string tableName, vector<string>* recordContent)
                 cout << "insert fail because index value exist" << endl;
                 return;
             }
-            
-            
         }
         else if (attributeVector[i].ifUnique)
         {
