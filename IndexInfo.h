@@ -7,8 +7,8 @@ using namespace std;
 class IndexInfo
 {
 public:
-	IndexInfo(string i,string t,string a)
-	{indexName = i;tableName = t;Attribute = a;}
+	IndexInfo(string i,string t,string a,int ty)
+	{indexName = i;tableName = t;Attribute = a;type = ty}
     string indexName;
     string tableName;
     string Attribute;
