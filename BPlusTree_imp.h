@@ -824,7 +824,7 @@ bool BPlusTree<KeyType>::adjustAfterDelete(Node pNode)
 template <class KeyType>
 void BPlusTree<KeyType>::dropTree(Node node)
 {
-    //TODO:删除每一个node
+    if(!node) return;
     if(!node->isLeaf) //if it has child
     {
         for(size_t i=0;i <= node->count;i++)

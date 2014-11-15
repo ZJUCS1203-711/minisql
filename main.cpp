@@ -68,11 +68,12 @@ int main(int argc,char * argv[])
             {
                 in.interpreter(s);
             }
+            file.close();
             fileRead = 0;
             finish = clock();
             double duration = (double)(finish - start) / CLOCKS_PER_SEC;
             duration *= 1000;
-            printf( "%2.1f seconds\n", duration );
+            printf( "%2.1f milliseconds\n", duration );
         }
         else
         {

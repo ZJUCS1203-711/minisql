@@ -465,13 +465,14 @@ int Interpreter::interpreter(string s)
 	{ return 1;}
 	else if (strcmp(word.c_str(), "execfile") == 0)
 	{
-		string fileName = getWord(s,&tmp);
+		fileName = getWord(s,&tmp);
 		cout<<"try to open "<<fileName<<"..."<<endl;
 		return 2;
 	}
 	else
 	{
-		cout<<"Error, command "<<word<<" not found"<<endl;
+		if(word)
+			cout<<"Error, command "<<word<<" not found"<<endl;
 		return 0;
 	}
 	return 0;
