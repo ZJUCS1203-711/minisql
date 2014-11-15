@@ -120,7 +120,11 @@ int Interpreter::interpreter(string s)
 							for( i= 0;i<attributeVector.size();i++)
 							{
 								if(primaryKey==attributeVector[i].name)
+								{
+									attributeVector[i].ifUnique = true;
 									break;
+								}
+
 							}
 							if(i==attributeVector.size())
 							{
