@@ -88,7 +88,9 @@ int CatalogManager::addIndex(string indexName,string tableName,string Attribute,
             memcpy(addressBegin, &i, sizeof(IndexInfo));
             bm.set_usingSize(*btmp, bm.get_usingSize(*btmp) + sizeof(IndexInfo));
             bm.set_dirty(*btmp);
-            return 1;
+
+
+            return this->setIndexOnAttribute(tableName,Attribute,indexName);
         }
         else
         {
@@ -280,7 +282,36 @@ int CatalogManager::addTable(string tableName, vector<Attribute>* attributeVecto
     }
     return 0;
 }
+int CatalogManager::setIndexOnAttribute(string tableName,string AttributeName,string indexName)
+{
+    fileNode *ftmp = bm.getFile(tableName.c_str());
+    blockNode *btmp = bm.getBlockHead(ftmp);
 
+    if (btmp)
+    {
+
+        char* addressBegin = bm.get_content(*btmp) ;
+        addressBegin += 2;
+        int size = *addressBegin;
+        addressBegin++;
+        Attribute *a = (Attribute *)addressBegin;
+        for(int i =0;i<size;i++)
+        {
+            if(a->name == AttributeName)
+            {
+                a->index = indexName;
+                bm.set_dirty(*btmp);
+                break;
+            }
+            a ++;
+        }
+        if(i<size)
+            return 1;
+        else
+            return 0;
+    }
+    return 0;
+}
 int CatalogManager::attributeGet(string tableName, vector<Attribute>* attributeVector)
 {
     fileNode *ftmp = bm.getFile(tableName.c_str());
