@@ -8,12 +8,21 @@
 
 #include "IndexManager.h"
 #include <iostream>
+#include "API.h"
+#include "IndexInfo.h"
+#include <vector>
 using namespace std;
 
 IndexManager::IndexManager()
 {
-    
-    
+    vector<IndexInfo> allIndexInfo;
+    api->allIndexAddressInfoGet(&allIndexInfo);
+    for(vector<IndexInfo>::iterator i = allIndexInfo.begin();i != allIndexInfo.end();i ++)
+    {
+        cout << "in constructor" << endl;
+        cout << i->indexName << " " << i->type << endl;
+        createIndex(i->indexName, i->type);
+    }
 }
 
 IndexManager::~IndexManager()
@@ -39,11 +48,8 @@ IndexManager::~IndexManager()
     {
         if(itFloat->second)
         {
-            cout << "before written back to" << endl;
             itFloat ->second-> writtenbackToDiskAll();
-            cout << "after written bake to " << endl;
             delete itFloat->second;
-            cout << "After delete" << endl;
         }
     }
 }

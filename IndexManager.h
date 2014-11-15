@@ -16,7 +16,7 @@
 #include "Attribute.h"
 #include "BPlusTree.h"
 
-
+class API;
 
 class IndexManager{
 private:
@@ -26,6 +26,9 @@ private:
 
     int static const TYPE_FLOAT = Attribute::TYPE_FLOAT;
     int static const TYPE_INT = Attribute::TYPE_INT; // other values mean the size of the char.Eg, 4 means char(4);
+    
+    API *api;
+    
     intMap indexIntMap;
     stringMap indexStringMap;
     floatMap indexFloatMap;
