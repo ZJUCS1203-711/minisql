@@ -231,7 +231,7 @@ void API::recordShow(string tableName, vector<Condition>* conditionVector)
         
         if (blockOffset == -1)
         {
-            //if we con't find the block by index,we need to find all block
+            cout << "if we con't find the block by index,we need to find all block" << endl;
             num = rm->recordAllShow(tableName, conditionVector);
         }
         else
@@ -320,6 +320,7 @@ void API::recordInsert(string tableName, vector<string>* recordContent)
     
     if(blockOffset >= 0)
     {
+        cout << "before index insert========= " << blockOffset << endl;
         recordIndexInsert(recordString, recordSize, &attributeVector, blockOffset);
         cm->insertRecord(tableName, 1);
         cout << "insert record into table " << tableName << " successful" << endl;
@@ -477,8 +478,10 @@ int API::attributeGet(string tableName, vector<Attribute>* attributeVector)
 void API::recordIndexInsert(char* recordBegin,int recordSize, vector<Attribute>* attributeVector,  int blockOffset)
 {
     char* contentBegin = recordBegin;
+    cout << "recordIndexInsert()=============" << endl;
     for (int i = 0; i < (*attributeVector).size() ; i++)
     {
+        cout << "name : " << (*attributeVector)[i].name << " index: " << (*attributeVector)[i].index <<endl;
         int type = (*attributeVector)[i].type;
         int typeSize = typeSizeGet(type);
         if ((*attributeVector)[i].index != "")
@@ -515,6 +518,7 @@ void API::indexInsert(string indexName, char* contentBegin, int type, int blockO
         tmp << stringTmp;
     }
     tmp >> content;
+    cout << "im->insert(" <<rm->indexFileNameGet(indexName) << "," << content << "," <<blockOffset << "," << type << ")" << endl;
     im->insertIndex(rm->indexFileNameGet(indexName), content, blockOffset, type);
 }
 

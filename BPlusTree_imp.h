@@ -874,6 +874,7 @@ void BPlusTree<KeyType>::readFromDisk(blockNode* btmp)
         cout << "in while" << endl;
         key = *(KeyType*)indexBegin;
         value = *(offsetNumber*)valueBegin;
+        cout << "insert what:" << key << "***************" << "value:" << value << endl;
         insertKey(key, value);
         valueBegin += keySize + valueSize;
         indexBegin += keySize + valueSize;
@@ -898,11 +899,12 @@ void BPlusTree<KeyType>::writtenbackToDiskAll()
         for(int i = 0;i < ntmp->count;i ++)
         {
             cout << "in write" << endl;
+            cout << "write what : " << ntmp->keys[i] << " keysize:" << keySize << " value:" << ntmp->vals[i] << "---------"<<endl;
             char* key = (char*)&(ntmp->keys[i]);
             char* value = (char*)&(ntmp->vals[i]);
-            strncpy(bm.get_content(*btmp)+bm.get_usingSize(*btmp),key,keySize);
+            memcpy(bm.get_content(*btmp)+bm.get_usingSize(*btmp),key,keySize);
             bm.set_usingSize(*btmp, bm.get_usingSize(*btmp) + keySize);
-            strncpy(bm.get_content(*btmp)+bm.get_usingSize(*btmp),value,valueSize);
+            memcpy(bm.get_content(*btmp)+bm.get_usingSize(*btmp),value,valueSize);
             bm.set_usingSize(*btmp, bm.get_usingSize(*btmp) + valueSize);
         }
         
@@ -920,6 +922,11 @@ void BPlusTree<KeyType>::writtenbackToDiskAll()
     }
     cout << "Out the written back to disk" << endl;
 
+    
+    fileNode* ftmp = bm.getFile(file->fileName);
+    blockNode* b2 =  bm.getBlockHead(ftmp);
+    char * lim = bm.get_content(*b2);
+    cout << "key " << *((float*)lim) << "value " << *((offsetNumber*)(lim+sizeof(float))) << endl;
 }
 
 //debug

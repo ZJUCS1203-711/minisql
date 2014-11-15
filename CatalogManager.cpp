@@ -295,7 +295,8 @@ int CatalogManager::setIndexOnAttribute(string tableName,string AttributeName,st
         int size = *addressBegin;
         addressBegin++;
         Attribute *a = (Attribute *)addressBegin;
-        for(int i =0;i<size;i++)
+        int i;
+        for(i =0;i<size;i++)
         {
             if(a->name == AttributeName)
             {
