@@ -41,6 +41,8 @@ public:
 
 	int typeSizeGet(int type);
     
+    int allIndexNameGet(vector<string> *indexNameVector);
+    
     int attributeNameGet(string tableName, vector<string>* attributeNameVector);
 	int attributeTypeGet(string tableName, vector<string>* attributeTypeVector);
     int attributeGet(string tableName, vector<Attribute>* attributeVector);

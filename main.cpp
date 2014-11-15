@@ -87,25 +87,28 @@ int main(int argc,char * argv[])
     CatalogManager cm;
     RecordManager rm;
     IndexManager im;
+    
     api.rm = &rm;
     api.cm = &cm;
     api.im = &im;
     rm.api = &api;
+
     
 //    vector<Attribute> attributeVector;
 //    Attribute a1("nyle", Attribute::TYPE_INT, false);
-//    attributeVector.insert(attributeVector.begin(), a1);
+//    attributeVector.insert(attributeVector.end(), a1);
 //    
-//    Attribute a2("nyle2", Attribute::TYPE_FLOAT, false);
-//    attributeVector.insert(attributeVector.begin(), a2);
+//    Attribute a2("nyle2", Attribute::TYPE_FLOAT, true);
+//    attributeVector.insert(attributeVector.end(), a2);
 //    
 //    Attribute a3("nyle3", Attribute::TYPE_FLOAT, true);
-//    attributeVector.insert(attributeVector.begin(), a3);
-
+//    attributeVector.insert(attributeVector.end(), a3);
+////
 //    api.tableCreate("nyle", &attributeVector, "", 0);
-//    api.indexCreate("cccc", "nyle", "nyle3");
-      im.createIndex("/Users/dengyonghui/tmp/INDEX_FILE_cccc", -1);
-    im.insertIndex("/Users/dengyonghui/tmp/INDEX_FILE_cccc", "1.11", 2, -1);
+    
+//      api.indexCreate("aaaa", "nyle", "nyle2");
+//      im.createIndex("/Users/dengyonghui/tmp/INDEX_FILE_cccc", -1);
+//    im.insertIndex("/Users/dengyonghui/tmp/INDEX_FILE_cccc", "1.11", 2, -1);
 //    api.tableDrop("nyle");
 //    api.indexDrop("cccc");
 //    vector<string> a;
@@ -116,7 +119,34 @@ int main(int argc,char * argv[])
 //    }
     
 //    cout << cm.getIndexType("cccc");
+    
+//    vector<string> content;
+//    content.insert(content.end(), "11");
+//    content.insert(content.end(), "122.2");
+//    content.insert(content.end(), "22.223");
+//
+//    api.recordInsert("nyle", &content);
+//
+//    char t[2000];
+//    memset(t, 0, 2000);
+//    cm.recordStringGet("nyle", &content, t);
+//    cout << content[0] << " " << content[1] << " " << content[2] << endl;
+//    
+//    cout << *((int*)t) << " " << *((float*)(t + 4)) << " " << *((float*)(t + 8));
+    
+//    rm.recordInsert("nyle", t, 12);
+    
+    vector<Condition> conditions;
+    Condition c("nyle3", "22.223", Condition::OPERATOR_EQUAL);
+    conditions.insert(conditions.begin(), c);
+    
+    
+    
+    api.recordShow("nyle", NULL);
 
+    
+//    rm.recordAllShow("nyle", NULL);
+    
 
     return 1;
     

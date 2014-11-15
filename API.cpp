@@ -101,6 +101,7 @@ void API::indexCreate(string indexName, string tableName, string attributeName)
     vector<Attribute> attributeVector;
     cm->attributeGet(tableName, &attributeVector);
     int i;
+    int type = 0;
     for (i = 0; i < attributeVector.size(); i++)
     {
         if (attributeName == attributeVector[i].name)
@@ -111,6 +112,7 @@ void API::indexCreate(string indexName, string tableName, string attributeName)
                 
                 return;
             }
+            type = attributeVector[i].type;
             break;
         }
     }
@@ -125,7 +127,7 @@ void API::indexCreate(string indexName, string tableName, string attributeName)
     if (rm->indexCreate(indexName))
     {
         //CatalogManager to add a index information
-        cm->addIndex(indexName, tableName, attributeName);
+        cm->addIndex(indexName, tableName, attributeName, type);
         
         //get type of index
         int indexType = cm->getIndexType(indexName);
@@ -136,8 +138,6 @@ void API::indexCreate(string indexName, string tableName, string attributeName)
         }
         
         //indexManager to create a index tress
-        cout << indexType;
-        indexType = Attribute::TYPE_FLOAT;
         im->createIndex(rm->indexFileNameGet(indexName), indexType);
         
         //recordManager insert already record to index
@@ -242,7 +242,7 @@ void API::recordShow(string tableName, vector<Condition>* conditionVector)
             num = rm->recordBlockShow(tableName, conditionVector, block);
         }
         
-        cout << num << "records selected" << endl;
+        cout << num << " records selected" << endl;
     }
     else
     {
@@ -295,10 +295,16 @@ void API::recordInsert(string tableName, vector<string>* recordContent)
     
     if (conditionVector.size() > 0)
     {
-        int recordConflictNum =  rm->recordAllFind(tableName, &conditionVector);
-        if (recordConflictNum > 0) {
-            cout << "insert fail because unique value exist" << endl;
-            return;
+        for (int i = 0; i < conditionVector.size(); i++) {
+            vector<Condition> conditionTmp;
+            conditionTmp.insert(conditionTmp.begin(), conditionVector[i]);
+            
+            int recordConflictNum =  rm->recordAllFind(tableName, &conditionTmp);
+            if (recordConflictNum > 0) {
+                cout << "insert fail because unique value exist" << endl;
+                return;
+            }
+
         }
     }
     
@@ -564,10 +570,11 @@ string API::primaryIndexNameGet(string tableName)
 
 void API::tableAttributePrint(vector<Attribute>* attributeVector)
 {
-    for (Attribute attribute : *attributeVector)
+    for (int i = 0; i < (*attributeVector).size(); i++)
     {
-        cout << attribute.name << " ";
+        cout << (*attributeVector)[i].name << " ";
     }
+    cout << endl;
 }
 
 ///**

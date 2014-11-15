@@ -47,15 +47,15 @@ public:
     IndexManager();
     ~IndexManager();
 
-    void createIndex(string indexName,int type);
+    void createIndex(string filePath,int type);
     
-    void dropIndex(string indexName,int type);
+    void dropIndex(string filePath,int type);
     
-    offsetNumber searchIndex(string indexName,string key,int type);
+    offsetNumber searchIndex(string filePath,string key,int type);
 
-    void insertIndex(string indexName,string key,offsetNumber blockOffset,int type);
+    void insertIndex(string filePath,string key,offsetNumber blockOffset,int type);
     
-    void deleteIndexByKey(string indexName,string key,int type);
+    void deleteIndexByKey(string filePath,string key,int type);
 };
 
 
