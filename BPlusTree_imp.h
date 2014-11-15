@@ -836,7 +836,6 @@ void BPlusTree<KeyType>::dropTree(Node node)
     delete node;
     nodeCount --;
     return;
-    
 }
 
 template <class KeyType>
