@@ -4,6 +4,7 @@
 #include "Attribute.h"
 #include "Condition.h"
 #include "Minisql.h"
+#include "IndexInfo.h"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -40,6 +41,8 @@ public:
 	int recordSizeGet(string tableName);
 
 	int typeSizeGet(int type);
+    
+    int allIndexInfoGet(vector<IndexInfo> *indexNameVector);
     
     int attributeNameGet(string tableName, vector<string>* attributeNameVector);
 	int attributeTypeGet(string tableName, vector<string>* attributeTypeVector);

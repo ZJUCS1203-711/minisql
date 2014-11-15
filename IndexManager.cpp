@@ -39,8 +39,11 @@ IndexManager::~IndexManager()
     {
         if(itFloat->second)
         {
+            cout << "before written back to" << endl;
             itFloat ->second-> writtenbackToDiskAll();
+            cout << "after written bake to " << endl;
             delete itFloat->second;
+            cout << "After delete" << endl;
         }
     }
 }

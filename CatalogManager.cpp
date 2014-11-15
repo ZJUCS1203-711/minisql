@@ -352,7 +352,6 @@ void CatalogManager::recordStringGet(string tableName, vector<string>* recordCon
         string content = (*recordContent)[i];
         int type = attribute.type;
         int typeSize = calcuteLenth2(type);
-
         stringstream ss;
         ss << content;
         if (type == Attribute::TYPE_INT)
@@ -365,9 +364,9 @@ void CatalogManager::recordStringGet(string tableName, vector<string>* recordCon
         else if (type == Attribute::TYPE_FLOAT)
         {
             //if the content is a float
-            float intTmp;
-            ss >> intTmp;
-            memcpy(contentBegin, ((char*)&intTmp), typeSize);
+            float floatTmp;
+            ss >> floatTmp;
+            memcpy(contentBegin, ((char*)&floatTmp), typeSize);
         }
         else
         {
