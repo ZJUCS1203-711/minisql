@@ -50,9 +50,9 @@ int Interpreter::interpreter(string s)
 					// deal with the data type
 					word = getWord(s,&tmp);
 					if (strcmp(word.c_str(), "int") == 0)
-						type = -1;
-					else if(strcmp(word.c_str(), "float") == 0)
 						type = 0;
+					else if(strcmp(word.c_str(), "float") == 0)
+						type = -1;
 					else if(strcmp(word.c_str(), "char") == 0)
 					{
 						word = getWord(s,&tmp);
