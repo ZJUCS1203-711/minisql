@@ -15,9 +15,11 @@
 void init()
 {
     FILE *fp;
-    fp = fopen("Indexs", "w+");
+    fp = fopen("Indexs", "r");
     if (fp == NULL)
     {
+        fclose(fp);
+        fopen("Indexs", "w+");
         return;
     }
     fclose(fp);
@@ -82,23 +84,40 @@ int main(int argc,char * argv[])
     init();
     
     API api;
-    CatalogManager catalogManager;
+    CatalogManager cm;
     RecordManager rm;
     IndexManager im;
     api.rm = &rm;
-    api.cm = &catalogManager;
+    api.cm = &cm;
     api.im = &im;
     rm.api = &api;
     
-    vector<Attribute> attributeVector;
-    Attribute a1("nyle", Attribute::TYPE_INT, false);
-    attributeVector.insert(attributeVector.begin(), a1);
+//    vector<Attribute> attributeVector;
+//    Attribute a1("nyle", Attribute::TYPE_INT, false);
+//    attributeVector.insert(attributeVector.begin(), a1);
+//    
+//    Attribute a2("nyle2", Attribute::TYPE_FLOAT, false);
+//    attributeVector.insert(attributeVector.begin(), a2);
+//    
+//    Attribute a3("nyle3", Attribute::TYPE_FLOAT, true);
+//    attributeVector.insert(attributeVector.begin(), a3);
+
+//    api.tableCreate("nyle", &attributeVector, "", 0);
+//    api.indexCreate("cccc", "nyle", "nyle3");
+      im.createIndex("/Users/dengyonghui/tmp/INDEX_FILE_cccc", -1);
+    im.insertIndex("/Users/dengyonghui/tmp/INDEX_FILE_cccc", "1.11", 2, -1);
+//    api.tableDrop("nyle");
+//    api.indexDrop("cccc");
+//    vector<string> a;
+//    cm.indexNameListGet("nyle", &a);
+//    for (int i = 0; i < a.size(); i++)
+//    {
+//        cout << a[i];
+//    }
     
-    Attribute a2("nyle2", Attribute::TYPE_FLOAT, false);
-    attributeVector.insert(attributeVector.begin(), a2);
-    
-    api.tableCreate("nyle", &attributeVector, "", 0);
-    
+//    cout << cm.getIndexType("cccc");
+
+
     return 1;
     
 }

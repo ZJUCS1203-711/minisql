@@ -38,8 +38,11 @@ IndexManager::~IndexManager()
     {
         if(itFloat->second)
         {
+            cout << "before written back to" << endl;
             itFloat ->second-> writtenbackToDiskAll();
+            cout << "after written bake to " << endl;
             delete itFloat->second;
+            cout << "After delete" << endl;
         }
     }
 }
@@ -55,8 +58,12 @@ void IndexManager::createIndex(string indexName,int type)
     }
     else if(type == TYPE_FLOAT)
     {
+        cout << "before create tree" << endl;
         BPlusTree<float> *tree = new BPlusTree<float>(indexName,keySize,degree);
         indexFloatMap.insert(floatMap::value_type(indexName, tree));
+        floatMap::iterator itFloat = indexFloatMap.find(indexName);
+        itFloat->second -> debug_print();
+        cout << "after create tree" << endl;
     }
     else // string
     {

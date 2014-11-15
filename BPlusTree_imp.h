@@ -882,14 +882,18 @@ void BPlusTree<KeyType>::readFromDisk(blockNode* btmp)
 template <class KeyType>
 void BPlusTree<KeyType>::writtenbackToDiskAll()
 {
+    cout << "In the written back to disk" << endl;
+    cout << file->fileName << endl;
     blockNode* btmp = bm.getBlockHead(file);
     Node ntmp = leafHead;
     int valueSize = sizeof(offsetNumber);
     while(ntmp != NULL)
     {
-        bm.set_usingSize(*btmp, 0);
+        cout << "in while" << endl;
+        bm.set_usingSize(*btmp, sizeof(size_t));
         for(int i = 0;i < ntmp->count;i ++)
         {
+            cout << "in write" << endl;
             char* key = (char*)&(ntmp->keys[i]);
             char* value = (char*)&(ntmp->vals[i]);
             bm.set_dirty(*btmp);
@@ -909,9 +913,10 @@ void BPlusTree<KeyType>::writtenbackToDiskAll()
         bm.set_usingSize(*btmp, sizeof(size_t));
         bm.set_dirty(*btmp);
         btmp = bm.getNextBlock(file, btmp);
-        
+
     }
-    
+    cout << "Out the written back to disk" << endl;
+
 }
 
 //debug
