@@ -471,7 +471,7 @@ int Interpreter::interpreter(string s)
 	}
 	else
 	{
-		if(word)
+		if(word != "")
 			cout<<"Error, command "<<word<<" not found"<<endl;
 		return 0;
 	}
