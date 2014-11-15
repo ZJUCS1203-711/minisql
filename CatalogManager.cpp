@@ -61,7 +61,7 @@ int CatalogManager::getAllIndex(vector<IndexInfo> * indexs)
         IndexInfo * i = (IndexInfo *)addressBegin;
         for(int j = 0 ;j<(bm.get_usingSize(*btmp)/sizeof(IndexInfo));j++)
         {
-            indexs.push_back((*i));
+            indexs->push_back((*i));
             i ++;
         }
     }

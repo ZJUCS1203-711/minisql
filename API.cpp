@@ -444,6 +444,15 @@ int API::indexNameListGet(string tableName, vector<string>* indexNameVector)
     return cm->indexNameListGet(tableName, indexNameVector);
 }
 
+void API::allIndexAddressInfoGet(vector<IndexInfo> *indexNameVector)
+{
+    cm->getAllIndex(indexNameVector);
+    for (int i = 0; i < (*indexNameVector).size(); i++)
+    {
+        (*indexNameVector)[i].indexName = rm->indexFileNameGet((*indexNameVector)[i].indexName);
+    }
+}
+
 
 /**
  *

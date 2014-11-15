@@ -42,7 +42,7 @@ public:
 
 	int typeSizeGet(int type);
     
-    int allIndexInfoGet(vector<IndexInfo> *indexNameVector);
+    void allIndexAddressInfoGet(vector<IndexInfo> *indexNameVector);
     
     int attributeNameGet(string tableName, vector<string>* attributeNameVector);
 	int attributeTypeGet(string tableName, vector<string>* attributeTypeVector);
