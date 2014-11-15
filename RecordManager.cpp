@@ -588,7 +588,7 @@ bool RecordManager::contentConditionFit(char* content,int type,Condition* condit
 string RecordManager::indexFileNameGet(string indexName)
 {
     string tmp = "";
-    return tmp + "/Users/dengyonghui/tmp/INDEX_FILE_" + indexName;
+    return "INDEX_FILE_"+indexName;
 }
 
 /**
@@ -599,5 +599,5 @@ string RecordManager::indexFileNameGet(string indexName)
 string RecordManager::tableFileNameGet(string tableName)
 {
     string tmp = "";
-    return tmp + "/Users/dengyonghui/tmp/TABLE_FILE_" + tableName;
+    return tmp + "TABLE_FILE_" + tableName;
 }
