@@ -891,8 +891,6 @@ void BPlusTree<KeyType>::writtenbackToDiskAll()
     int valueSize = sizeof(offsetNumber);
     while(ntmp != NULL)
     {
-        cout << "while" << endl;
-        cout << btmp->using_size << endl;
         bm.set_usingSize(*btmp, 0);
         bm.set_dirty(*btmp);
         for(int i = 0;i < ntmp->count;i ++)
