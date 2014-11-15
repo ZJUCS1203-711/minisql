@@ -20,6 +20,7 @@ public:
     int insertRecord(string tableName, int recordNum);  // increment the number of record
     int getRecordNum(string tableName);
     int indexNameListGet(string tableName, vector<string>* indexNameVector);
+    int getAllIndex(vector<IndexInfo> * indexs);
 
     int addTable(string tableName, vector<Attribute>* attributeVector, string primaryKeyName ,int primaryKeyLocation );
     int getIndexType(string indexName);

@@ -49,6 +49,25 @@ int CatalogManager::getIndexType(string indexName)
 
     return -2;
 }
+
+int CatalogManager::getAllIndex(vector<IndexInfo> * indexs)
+{
+    fileNode *ftmp = bm.getFile("Indexs");
+    blockNode *btmp = bm.getBlockHead(ftmp);
+    if (btmp )
+    {
+        char* addressBegin;
+        addressBegin = bm.get_content(*btmp);
+        IndexInfo * i = (IndexInfo *)addressBegin;
+        for(int j = 0 ;j<(bm.get_usingSize(*btmp)/sizeof(IndexInfo));j++)
+        {
+            indexs.push_back((*i));
+            i ++;
+        }
+    }
+
+    return 1;
+}
 int CatalogManager::addIndex(string indexName,string tableName,string Attribute,int type)
 {
     fileNode *ftmp = bm.getFile("Indexs");
