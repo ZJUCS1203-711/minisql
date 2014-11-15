@@ -861,6 +861,7 @@ void BPlusTree<KeyType>::readFromDiskAll()
 template <class KeyType>
 void BPlusTree<KeyType>::readFromDisk(blockNode* btmp)
 {
+    cout << "in read from disk" << endl;
     int valueSize = sizeof(offsetNumber);
     char* indexBegin = bm.get_content(*btmp);
     char* valueBegin = indexBegin + keySize;
@@ -870,12 +871,14 @@ void BPlusTree<KeyType>::readFromDisk(blockNode* btmp)
     while(valueBegin - bm.get_content(*btmp) < bm.get_usingSize(*btmp))
     // there are available position in the block
     {
+        cout << "in while" << endl;
         key = *(KeyType*)indexBegin;
         value = *(offsetNumber*)valueBegin;
         insertKey(key, value);
         valueBegin += keySize + valueSize;
         indexBegin += keySize + valueSize;
     }
+    cout << "out read from disk" << endl;
     
 }
 
@@ -884,15 +887,18 @@ void BPlusTree<KeyType>::writtenbackToDiskAll()
 {
     blockNode* btmp = bm.getBlockHead(file);
     Node ntmp = leafHead;
+    cout << ntmp << " " << ntmp->count << endl;
     int valueSize = sizeof(offsetNumber);
     while(ntmp != NULL)
     {
+        cout << "while" << endl;
+        cout << btmp->using_size << endl;
         bm.set_usingSize(*btmp, 0);
+        bm.set_dirty(*btmp);
         for(int i = 0;i < ntmp->count;i ++)
         {
             char* key = (char*)&(ntmp->keys[i]);
             char* value = (char*)&(ntmp->vals[i]);
-            bm.set_dirty(*btmp);
             strncpy(bm.get_content(*btmp)+bm.get_usingSize(*btmp),key,keySize);
             bm.set_usingSize(*btmp, bm.get_usingSize(*btmp) + keySize);
             strncpy(bm.get_content(*btmp)+bm.get_usingSize(*btmp),value,valueSize);
@@ -906,7 +912,7 @@ void BPlusTree<KeyType>::writtenbackToDiskAll()
     {
         if(btmp->ifbottom)
             break;
-        bm.set_usingSize(*btmp, sizeof(size_t));
+        bm.set_usingSize(*btmp, 0);
         bm.set_dirty(*btmp);
         btmp = bm.getNextBlock(file, btmp);
         

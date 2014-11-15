@@ -13,6 +13,7 @@ using namespace std;
 IndexManager::IndexManager()
 {
     
+    
 }
 
 IndexManager::~IndexManager()
@@ -44,36 +45,36 @@ IndexManager::~IndexManager()
     }
 }
 
-void IndexManager::createIndex(string indexName,int type)
+void IndexManager::createIndex(string filePath,int type)
 {
     int keySize = getKeySize(type);
     int degree = getDegree(type);
     if(type == TYPE_INT)
     {
-        BPlusTree<int> *tree = new BPlusTree<int>(indexName,keySize,degree);
-        indexIntMap.insert(intMap::value_type(indexName, tree));
+        BPlusTree<int> *tree = new BPlusTree<int>(filePath,keySize,degree);
+        indexIntMap.insert(intMap::value_type(filePath, tree));
     }
     else if(type == TYPE_FLOAT)
     {
-        BPlusTree<float> *tree = new BPlusTree<float>(indexName,keySize,degree);
-        indexFloatMap.insert(floatMap::value_type(indexName, tree));
+        BPlusTree<float> *tree = new BPlusTree<float>(filePath,keySize,degree);
+        indexFloatMap.insert(floatMap::value_type(filePath, tree));
     }
     else // string
     {
-        BPlusTree<string> *tree = new BPlusTree<string>(indexName,keySize,degree);
-        indexStringMap.insert(stringMap::value_type(indexName, tree));
+        BPlusTree<string> *tree = new BPlusTree<string>(filePath,keySize,degree);
+        indexStringMap.insert(stringMap::value_type(filePath, tree));
     }
     
 }
 
-void IndexManager::dropIndex(string indexName,int type)
+void IndexManager::dropIndex(string filePath,int type)
 {
     if(type == TYPE_INT)
     {
-        intMap::iterator itInt = indexIntMap.find(indexName);
+        intMap::iterator itInt = indexIntMap.find(filePath);
         if(itInt == indexIntMap.end())
         {
-            cout << "Error:in drop index, no index " << indexName <<" exits" << endl;
+            cout << "Error:in drop index, no index " << filePath <<" exits" << endl;
             return;
         }
         else
@@ -84,10 +85,10 @@ void IndexManager::dropIndex(string indexName,int type)
     }
     else if(type == TYPE_FLOAT)
     {
-        floatMap::iterator itFloat = indexFloatMap.find(indexName);
+        floatMap::iterator itFloat = indexFloatMap.find(filePath);
         if(itFloat == indexFloatMap.end())
         {
-            cout << "Error:in drop index, no index " << indexName <<" exits" << endl;
+            cout << "Error:in drop index, no index " << filePath <<" exits" << endl;
             return;
         }
         else
@@ -98,10 +99,10 @@ void IndexManager::dropIndex(string indexName,int type)
     }
     else // string
     {
-        stringMap::iterator itString = indexStringMap.find(indexName);
+        stringMap::iterator itString = indexStringMap.find(filePath);
         if(itString == indexStringMap.end())
         {
-            cout << "Error:in drop index, no index " << indexName <<" exits" << endl;
+            cout << "Error:in drop index, no index " << filePath <<" exits" << endl;
             return;
         }
         else
@@ -113,16 +114,16 @@ void IndexManager::dropIndex(string indexName,int type)
 
 }
 
-offsetNumber IndexManager::searchIndex(string indexName,string key,int type)
+offsetNumber IndexManager::searchIndex(string filePath,string key,int type)
 {
     setKey(type, key);
     
     if(type == TYPE_INT)
     {
-        intMap::iterator itInt = indexIntMap.find(indexName);
+        intMap::iterator itInt = indexIntMap.find(filePath);
         if(itInt == indexIntMap.end())
         {
-            cout << "Error:in search index, no index " << indexName <<" exits" << endl;
+            cout << "Error:in search index, no index " << filePath <<" exits" << endl;
             return -1;
         }
         else
@@ -132,10 +133,10 @@ offsetNumber IndexManager::searchIndex(string indexName,string key,int type)
     }
     else if(type == TYPE_FLOAT)
     {
-        floatMap::iterator itFloat = indexFloatMap.find(indexName);
+        floatMap::iterator itFloat = indexFloatMap.find(filePath);
         if(itFloat == indexFloatMap.end())
         {
-            cout << "Error:in search index, no index " << indexName <<" exits" << endl;
+            cout << "Error:in search index, no index " << filePath <<" exits" << endl;
             return -1;
         }
         else
@@ -146,10 +147,10 @@ offsetNumber IndexManager::searchIndex(string indexName,string key,int type)
     }
     else // string
     {
-        stringMap::iterator itString = indexStringMap.find(indexName);
+        stringMap::iterator itString = indexStringMap.find(filePath);
         if(itString == indexStringMap.end())
         {
-            cout << "Error:in search index, no index " << indexName <<" exits" << endl;
+            cout << "Error:in search index, no index " << filePath <<" exits" << endl;
             return -1;
         }
         else
@@ -160,16 +161,16 @@ offsetNumber IndexManager::searchIndex(string indexName,string key,int type)
     }
 }
 
-void IndexManager::insertIndex(string indexName,string key,offsetNumber blockOffset,int type)
+void IndexManager::insertIndex(string filePath,string key,offsetNumber blockOffset,int type)
 {
     setKey(type, key);
 
     if(type == TYPE_INT)
     {
-        intMap::iterator itInt = indexIntMap.find(indexName);
+        intMap::iterator itInt = indexIntMap.find(filePath);
         if(itInt == indexIntMap.end())
         {
-            cout << "Error:in search index, no index " << indexName <<" exits" << endl;
+            cout << "Error:in search index, no index " << filePath <<" exits" << endl;
             return;
         }
         else
@@ -180,10 +181,10 @@ void IndexManager::insertIndex(string indexName,string key,offsetNumber blockOff
     }
     else if(type == TYPE_FLOAT)
     {
-        floatMap::iterator itFloat = indexFloatMap.find(indexName);
+        floatMap::iterator itFloat = indexFloatMap.find(filePath);
         if(itFloat == indexFloatMap.end())
         {
-            cout << "Error:in search index, no index " << indexName <<" exits" << endl;
+            cout << "Error:in search index, no index " << filePath <<" exits" << endl;
             return;
         }
         else
@@ -195,10 +196,10 @@ void IndexManager::insertIndex(string indexName,string key,offsetNumber blockOff
     }
     else // string
     {
-        stringMap::iterator itString = indexStringMap.find(indexName);
+        stringMap::iterator itString = indexStringMap.find(filePath);
         if(itString == indexStringMap.end())
         {
-            cout << "Error:in search index, no index " << indexName <<" exits" << endl;
+            cout << "Error:in search index, no index " << filePath <<" exits" << endl;
             return;
         }
         else
@@ -209,16 +210,16 @@ void IndexManager::insertIndex(string indexName,string key,offsetNumber blockOff
     }
 }
 
-void IndexManager::deleteIndexByKey(string indexName,string key,int type)
+void IndexManager::deleteIndexByKey(string filePath,string key,int type)
 {
     setKey(type, key);
 
     if(type == TYPE_INT)
     {
-        intMap::iterator itInt = indexIntMap.find(indexName);
+        intMap::iterator itInt = indexIntMap.find(filePath);
         if(itInt == indexIntMap.end())
         {
-            cout << "Error:in search index, no index " << indexName <<" exits" << endl;
+            cout << "Error:in search index, no index " << filePath <<" exits" << endl;
             return;
         }
         else
@@ -229,10 +230,10 @@ void IndexManager::deleteIndexByKey(string indexName,string key,int type)
     }
     else if(type == TYPE_FLOAT)
     {
-        floatMap::iterator itFloat = indexFloatMap.find(indexName);
+        floatMap::iterator itFloat = indexFloatMap.find(filePath);
         if(itFloat == indexFloatMap.end())
         {
-            cout << "Error:in search index, no index " << indexName <<" exits" << endl;
+            cout << "Error:in search index, no index " << filePath <<" exits" << endl;
             return;
         }
         else
@@ -244,10 +245,10 @@ void IndexManager::deleteIndexByKey(string indexName,string key,int type)
     }
     else // string
     {
-        stringMap::iterator itString = indexStringMap.find(indexName);
+        stringMap::iterator itString = indexStringMap.find(filePath);
         if(itString == indexStringMap.end())
         {
-            cout << "Error:in search index, no index " << indexName <<" exits" << endl;
+            cout << "Error:in search index, no index " << filePath <<" exits" << endl;
             return;
         }
         else
