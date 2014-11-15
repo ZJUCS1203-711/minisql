@@ -41,7 +41,6 @@ int main(int argc,char * argv[])
     api.im = &im;
     rm.api = &api;
     
-    
     clock_t start = 0, finish;
 
     cout<<"*******************Welcome to use our MiniSQL**********************"<<endl;
@@ -107,25 +106,21 @@ int main(int argc,char * argv[])
 //
 //    
 //    vector<Attribute> attributeVector;
-//    Attribute a1("nyle", Attribute::TYPE_INT, false);
+//    Attribute a1("v1", Attribute::TYPE_INT, false);
 //    attributeVector.insert(attributeVector.end(), a1);
 //    
-//    Attribute a2("nyle2", Attribute::TYPE_FLOAT, true);
+//    Attribute a2("v2", Attribute::TYPE_FLOAT, false);
 //    attributeVector.insert(attributeVector.end(), a2);
-//    
-//    Attribute a3("nyle3", Attribute::TYPE_FLOAT, true);
-//    attributeVector.insert(attributeVector.end(), a3);
 //
-//    api.tableCreate("nyle", &attributeVector, "", 0);
-//    
+//    api.tableCreate("dd", &attributeVector, "", 0);
+    
 //    api.indexCreate("index1", "nyle", "nyle2");
 //
 //    vector<string> content;
 //    content.insert(content.end(), "11");
 //    content.insert(content.end(), "2.22");
-//    content.insert(content.end(), "10");
 //
-//    api.recordInsert("nyle", &content);
+//    api.recordInsert("dd", &content);
 //
     
 //    char t[2000];

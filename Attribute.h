@@ -10,6 +10,7 @@
 #define minisql_Attribute_h
 
 #include <string>
+#include <iostream>
 using namespace std;
 
 class Attribute
@@ -25,6 +26,11 @@ public:
     int static const TYPE_FLOAT = -1;
     int static const TYPE_INT = 0;
     string indexNameGet(){return index;}
+    
+    void print()
+    {
+        cout <<  "name: " << name << ";type: " << type << ";ifUnique: " << ifUnique << ";index: " << index << endl;
+    }
 };
 
 #endif

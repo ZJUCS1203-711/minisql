@@ -159,6 +159,14 @@ void API::indexCreate(string indexName, string tableName, string attributeName)
  */
 void API::tableCreate(string tableName, vector<Attribute>* attributeVector, string primaryKeyName,int primaryKeyLocation)
 {
+    cout << "=======api::tablecreate=======" << endl
+    << "tableName: " << tableName << "; primaryKeyName: " << primaryKeyName << "; location: " << primaryKeyLocation << endl;
+    for (int i = 0; i < (* attributeVector).size(); i++)
+    {
+        (* attributeVector)[i].print();
+    }
+    
+    
     if(cm->findTable(tableName) == TABLE_FILE)
     {
         cout << "There is a table " << tableName << " already" << endl;
@@ -180,6 +188,7 @@ void API::tableCreate(string tableName, vector<Attribute>* attributeVector, stri
         string indexName = primaryIndexNameGet(tableName);
         indexCreate(indexName, tableName, primaryKeyName);
     }
+    cout << "=======api::tablecreate=======" << endl;
 }
 
 /**
@@ -258,6 +267,12 @@ void API::recordShow(string tableName, vector<Condition>* conditionVector)
  */
 void API::recordInsert(string tableName, vector<string>* recordContent)
 {
+    cout << "=======api::recordInsert=======" << endl;
+    cout << "tableName:" << tableName << endl;
+    for (int i = 0; i < (*recordContent).size(); i++) {
+        cout << (*recordContent)[i] << endl;
+    }
+    
     if (!tableExist(tableName)) return;
     
     string indexName;
@@ -327,6 +342,7 @@ void API::recordInsert(string tableName, vector<string>* recordContent)
     {
         cout << "insert record into table " << tableName << " fail" << endl;
     }
+    cout << "=======api::recordInsert=======" << endl;
 }
 
 /**
