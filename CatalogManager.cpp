@@ -47,13 +47,13 @@ int CatalogManager::getIndexType(string indexName)
         return -2;
     }
 
-    return 0;
+    return -2;
 }
-int CatalogManager::addIndex(string indexName,string tableName,string Attribute)
+int CatalogManager::addIndex(string indexName,string tableName,string Attribute,int type)
 {
     fileNode *ftmp = bm.getFile("Indexs");
     blockNode *btmp = bm.getBlockHead(ftmp);
-    IndexInfo i(indexName,tableName,Attribute);
+    IndexInfo i(indexName,tableName,Attribute,type);
     while (true)
     {
         if (btmp == NULL)

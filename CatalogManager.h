@@ -11,7 +11,7 @@ public:
     BufferManager bm;
     CatalogManager();
     virtual ~CatalogManager();
-    int addIndex(string indexName,string tableName,string attributeName);
+    int addIndex(string indexName,string tableName,string attributeName,int type);
     int findTable(string tableName);
     int findIndex(string indexName);
     int dropTable(string tableName);
