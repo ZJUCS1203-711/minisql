@@ -335,6 +335,7 @@ int RecordManager::recordBlockDelete(string tableName,  vector<Condition>* condi
         if(recordConditionFit(recordBegin, recordSize, &attributeVector, conditionVector))
         {
             count ++;
+            
             api->recordIndexDelete(recordBegin, recordSize, &attributeVector, block->offsetNum);
             int i = 0;
             for (i = 0; i + recordSize + recordBegin - bm.get_content(*block) < bm.get_usingSize(*block); i++)

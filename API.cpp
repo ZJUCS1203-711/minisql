@@ -231,7 +231,7 @@ void API::recordShow(string tableName, vector<Condition>* conditionVector)
         
         if (blockOffset == -1)
         {
-            cout << "if we con't find the block by index,we need to find all block" << endl;
+            //cout << "if we con't find the block by index,we need to find all block" << endl;
             num = rm->recordAllShow(tableName, conditionVector);
         }
         else
@@ -524,6 +524,7 @@ void API::indexInsert(string indexName, char* contentBegin, int type, int blockO
 
 void API::recordIndexDelete(char* recordBegin,int recordSize, vector<Attribute>* attributeVector, int blockOffset)
 {
+    cout << "recordIndexDelete: ====" << endl;
     char* contentBegin = recordBegin;
     for (int i = 0; i < (*attributeVector).size() ; i++)
     {
@@ -555,8 +556,12 @@ void API::recordIndexDelete(char* recordBegin,int recordSize, vector<Attribute>*
                 string stringTmp = value;
                 tmp << stringTmp;
             }
+            
+            tmp >> content;
+            cout << "im->deleteIndexByKey" << rm->indexFileNameGet((*attributeVector)[i].index) << "," << content << "," << type << ")" << endl;
+            im->deleteIndexByKey(rm->indexFileNameGet((*attributeVector)[i].index), content, type);
+
         }
-        
         contentBegin += typeSize;
     }
 
