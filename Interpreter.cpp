@@ -471,6 +471,9 @@ int Interpreter::interpreter(string s)
 	}
 	else
 	{
+		char * test = word.c_str();
+		int t = test;
+		cout<<"unknown command ascii: "<<t<<"."<<endl;
 		cout<<"Error, command "<<word<<" not found"<<endl;
 		return 0;
 	}
