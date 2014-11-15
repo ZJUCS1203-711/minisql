@@ -22,7 +22,7 @@ public:
     int getRecordNum(string tableName);
     int indexNameListGet(string tableName, vector<string>* indexNameVector);
     int getAllIndex(vector<IndexInfo> * indexs);
-
+    int setIndexOnAttribute(string tableName,string AttributeName,string indexName);
     int addTable(string tableName, vector<Attribute>* attributeVector, string primaryKeyName ,int primaryKeyLocation );
     int getIndexType(string indexName);
     int attributeGet(string tableName, vector<Attribute>* attributeVector);
