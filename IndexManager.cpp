@@ -13,8 +13,9 @@
 #include <vector>
 using namespace std;
 
-IndexManager::IndexManager()
+IndexManager::IndexManager(API *m_api)
 {
+    api = m_api;
     vector<IndexInfo> allIndexInfo;
     api->allIndexAddressInfoGet(&allIndexInfo);
     for(vector<IndexInfo>::iterator i = allIndexInfo.begin();i != allIndexInfo.end();i ++)

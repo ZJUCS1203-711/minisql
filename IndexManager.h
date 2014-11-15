@@ -47,7 +47,7 @@ private:
     
     
 public:
-    IndexManager();
+    IndexManager(API *api);
     ~IndexManager();
 
     void createIndex(string filePath,int type);
