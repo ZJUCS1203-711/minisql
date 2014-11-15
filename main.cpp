@@ -51,7 +51,7 @@ int main(int argc,char * argv[])
     Interpreter in;
     in.ap = &api;
     string s;
-    
+    int status = 0;
     while(1)
     {
         if(fileRead)
@@ -80,12 +80,14 @@ int main(int argc,char * argv[])
             cout<<"minisql>>";
             getline(cin,s,';');
             start = clock();
-            long long haha =10000000;
-            while(haha>0)
-                haha--;
-            if(in.interpreter(s)==2)
+            status =  in.interpreter(s);
+            if(status==2)
             {
                 fileRead = 1;
+            }
+            else if(status==587)
+            {
+                break;
             }
             else{
                 finish = clock();

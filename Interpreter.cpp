@@ -448,7 +448,7 @@ int Interpreter::interpreter(string s)
 
 
 	else if (strcmp(word.c_str(), "quit") == 0)
-	{ return 1;}
+	{ return 587;}
 
 	else if (strcmp(word.c_str(), "commit") == 0)
 	{ return 1;}
