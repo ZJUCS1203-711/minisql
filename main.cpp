@@ -68,6 +68,7 @@ int main(int argc,char * argv[])
             {
                 in.interpreter(s);
             }
+            file.close();
             fileRead = 0;
             finish = clock();
             double duration = (double)(finish - start) / CLOCKS_PER_SEC;
