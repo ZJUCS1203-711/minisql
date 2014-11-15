@@ -225,15 +225,23 @@ void API::recordShow(string tableName, vector<Condition>* conditionVector)
         {
             for (Condition condition : *conditionVector)
             {
-                if (condition.operate == Condition::OPERATOR_EQUAL)
+                int i = 0;
+                for (i = 0; i < attributeVector.size(); i++)
                 {
-                    for (Attribute attribute : attributeVector)
+                    if (attributeVector[i].name == condition.attributeName)
                     {
-                        if (attribute.index != "" && attribute.name == condition.attributeName)
+                        if (condition.operate == Condition::OPERATOR_EQUAL && attributeVector[i].index != "")
                         {
-                            blockOffset = im->searchIndex(rm->indexFileNameGet(attribute.index), condition.value, attribute.type);
+                                blockOffset = im->searchIndex(rm->indexFileNameGet(attributeVector[i].index), condition.value, attributeVector[i].type);
                         }
+                        break;
                     }
+                }
+                
+                if (i == attributeVector.size())
+                {
+                    cout << "the attribute is not exist in the table" << endl;
+                    return;
                 }
             }
         }
