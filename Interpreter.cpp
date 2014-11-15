@@ -465,7 +465,7 @@ int Interpreter::interpreter(string s)
 	{ return 1;}
 	else if (strcmp(word.c_str(), "execfile") == 0)
 	{
-		string fileName = getWord(s,&tmp);
+		fileName = getWord(s,&tmp);
 		cout<<"try to open "<<fileName<<"..."<<endl;
 		return 2;
 	}
