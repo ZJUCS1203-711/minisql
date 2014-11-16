@@ -210,6 +210,7 @@ void API::recordShow(string tableName, vector<string>* attributeNameVector)
  */
 void API::recordShow(string tableName, vector<string>* attributeNameVector, vector<Condition>* conditionVector)
 {
+    cout << "api:record show : ----->";print();
     if (cm->findTable(tableName) == TABLE_FILE)
     {
         int num = 0;

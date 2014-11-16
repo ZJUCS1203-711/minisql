@@ -25,6 +25,16 @@ void init()
     fclose(fp);
 }
 
+void print()
+{
+    clock_t finish = clock();
+    double duration = (double)(finish - start) / CLOCKS_PER_SEC;
+    duration *= 1000;
+    printf( "now time is %2.1f milliseconds\n", duration);
+}
+
+clock_t start;
+
 int main(int argc,char * argv[])
 {
     init();
@@ -41,7 +51,8 @@ int main(int argc,char * argv[])
     api.im = &im;
     rm.api = &api;
     
-    clock_t start = 0, finish;
+    start = 0;
+    clock_t finish;
 
     cout<<"*******************Welcome to use our MiniSQL**********************"<<endl;
     cout<<"******************* Author: Deng & Xu & Woo **********************"<<endl;

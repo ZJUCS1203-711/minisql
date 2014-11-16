@@ -9,6 +9,9 @@
 #ifndef Minisql_Minisql_h
 #define Minisql_Minisql_h
 #include <stdio.h>
+#include <time.h>
+#include <iostream>
+using namespace std;
 
 struct blockNode
 {
@@ -36,6 +39,10 @@ struct fileNode
     fileNode * nextFile;
     fileNode * preFile;
 };
+
+
+extern clock_t start;
+extern void print();
 
 #define MAX_FILE_NUM 40
 #define MAX_BLOCK_NUM 100

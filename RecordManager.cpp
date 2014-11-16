@@ -163,11 +163,14 @@ int RecordManager::recordAllShow(string tableName, vector<string>* attributeName
  */
 int RecordManager::recordBlockShow(string tableName, vector<string>* attributeNameVector, vector<Condition>* conditionVector, blockNode* block)
 {
+    
     //if block is null, return -1
     if (block == NULL)
     {
         return -1;
     }
+    
+    cout << "---->rm:record show : blocknum:" << block->offsetNum << " ---->"; print();
     int count = 0;
     
     char* recordBegin = bm.get_content(*block);
@@ -188,7 +191,6 @@ int RecordManager::recordBlockShow(string tableName, vector<string>* attributeNa
         }
         
         recordBegin += recordSize;
-        
     }
     
     return count;
