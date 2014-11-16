@@ -29,8 +29,8 @@ public:
     void indexDrop(string indexName);
 	void indexCreate(string indexName, string tableName, string attributeName);
   
-    void recordShow(string tableName);
-	void recordShow(string tableName, vector<Condition>* conditionVector);
+    void recordShow(string tableName, vector<string>* attributeNameVector = NULL);
+	void recordShow(string tableName,  vector<string>* attributeNameVector, vector<Condition>* conditionVector);
 
 	void recordInsert(string tableName,vector<string>* recordContent);
 
@@ -58,7 +58,7 @@ private:
     int tableExist(string tableName);
     int indexNameListGet(string tableName, vector<string>* indexNameVector);
     string primaryIndexNameGet(string tableName);
-    void tableAttributePrint(vector<Attribute>* attributeVector);
+    void tableAttributePrint(vector<string>* name);
 };
 
 struct int_t{

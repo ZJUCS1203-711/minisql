@@ -125,7 +125,7 @@ int RecordManager::recordInsert(string tableName,char* record, int recordSize)
  * @param conditionVector: the conditions list
  * @return int: the number of the record meet requirements(-1 represent error)
  */
-int RecordManager::recordAllShow(string tableName, vector<Condition>* conditionVector)
+int RecordManager::recordAllShow(string tableName, vector<string>* attributeNameVector,  vector<Condition>* conditionVector)
 {
     fileNode *ftmp = bm.getFile(tableFileNameGet(tableName).c_str());
     blockNode *btmp = bm.getBlockHead(ftmp);
@@ -138,13 +138,13 @@ int RecordManager::recordAllShow(string tableName, vector<Condition>* conditionV
         }
         if (btmp->ifbottom)
         {
-            int recordBlockNum = recordBlockShow(tableName, conditionVector, btmp);
+            int recordBlockNum = recordBlockShow(tableName,attributeNameVector, conditionVector, btmp);
             count += recordBlockNum;
             return count;
         }
         else
         {
-            int recordBlockNum = recordBlockShow(tableName, conditionVector, btmp);
+            int recordBlockNum = recordBlockShow(tableName, attributeNameVector, conditionVector, btmp);
             count += recordBlockNum;
             btmp = bm.getNextBlock(ftmp, btmp);
         }
@@ -161,7 +161,7 @@ int RecordManager::recordAllShow(string tableName, vector<Condition>* conditionV
  * @param conditionVector: the conditions list
  * @return int: the number of the record meet requirements in the block(-1 represent error)
  */
-int RecordManager::recordBlockShow(string tableName, vector<Condition>* conditionVector, blockNode* block)
+int RecordManager::recordBlockShow(string tableName, vector<string>* attributeNameVector, vector<Condition>* conditionVector, blockNode* block)
 {
     //if block is null, return -1
     if (block == NULL)
@@ -183,7 +183,7 @@ int RecordManager::recordBlockShow(string tableName, vector<Condition>* conditio
         if(recordConditionFit(recordBegin, recordSize, &attributeVector, conditionVector))
         {
             count ++;
-            recordPrint(recordBegin, recordSize, &attributeVector);
+            recordPrint(recordBegin, recordSize, &attributeVector, attributeNameVector);
             cout << endl;
         }
         
@@ -496,7 +496,7 @@ bool RecordManager::recordConditionFit(char* recordBegin,int recordSize, vector<
  * @param recordSize: size of the record
  * @param attributeVector: the attribute list of the record
  */
-void RecordManager::recordPrint(char* recordBegin, int recordSize, vector<Attribute>* attributeVector)
+void RecordManager::recordPrint(char* recordBegin, int recordSize, vector<Attribute>* attributeVector, vector<string> *attributeNameVector)
 {
     int type;
     string attributeName;
@@ -514,8 +514,15 @@ void RecordManager::recordPrint(char* recordBegin, int recordSize, vector<Attrib
         
         memcpy(content, contentBegin, typeSize);
 
-        contentPrint(content, type);
-
+        for(string name : *attributeNameVector)
+        {
+            if (name == (*attributeVector)[i].name)
+            {
+                contentPrint(content, type);
+                break;
+            }
+        }
+        
         contentBegin += typeSize;
     }
 }

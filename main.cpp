@@ -41,71 +41,10 @@ int main(int argc,char * argv[])
     api.im = &im;
     rm.api = &api;
     
-    clock_t start = 0, finish;
-
-    cout<<"*******************Welcome to use our MiniSQL**********************"<<endl;
-    cout<<"******************* Author: Deng & Xu & Woo **********************"<<endl;
-    int fileRead = 0;
-    //string fileName ="";
-    ifstream file;
-    Interpreter in;
-    in.ap = &api;
-    string s;
-    int status = 0;
-    while(1)
-    {
-        if(fileRead)
-        {
-
-            file.open(in.fileName.c_str());
-            if(!file.is_open())
-            {
-                cout<<"Fail to open "<<in.fileName<<endl;
-                fileRead = 0;
-                continue;
-            }
-            while(getline(file,s,';'))
-            {
-                in.interpreter(s);
-            }
-            file.close();
-            fileRead = 0;
-            finish = clock();
-            double duration = (double)(finish - start) / CLOCKS_PER_SEC;
-            duration *= 1000;
-            printf( "%2.1f milliseconds\n", duration );
-        }
-        else
-        {
-
-            cout<<"minisql>>";
-            getline(cin,s,';');
-            start = clock();
-            status =  in.interpreter(s);
-            if(status==2)
-            {
-                fileRead = 1;
-            }
-            else if(status==587)
-            {
-                break;
-            }
-            else{
-                finish = clock();
-                double duration = (double)(finish - start) / CLOCKS_PER_SEC;
-                duration *= 1000;
-                printf( "The duration is %2.1f milliseconds\n", duration );
-            }
-        }
-
-    }
-    
-    return 0;
-
+//        
     
     
-    
-//        api.tableDrop("nyle");
+//        api.tableDrop("student");
 //
 //    
 //    vector<Attribute> attributeVector;
@@ -115,7 +54,7 @@ int main(int argc,char * argv[])
 //    Attribute a2("v2", Attribute::TYPE_FLOAT, false);
 //    attributeVector.insert(attributeVector.end(), a2);
 //
-//    api.tableCreate("dd", &attributeVector, "", 0);
+//    api.tableCreate("nyle", &attributeVector, "", 0);
     
 //    api.indexCreate("index1", "nyle", "nyle2");
 //
@@ -123,7 +62,7 @@ int main(int argc,char * argv[])
 //    content.insert(content.end(), "11");
 //    content.insert(content.end(), "2.22");
 //
-//    api.recordInsert("dd", &content);
+//    api.recordInsert("nyle", &content);
 //
     
 //    char t[2000];
@@ -136,17 +75,19 @@ int main(int argc,char * argv[])
 //    rm.recordInsert("nyle", t, 12);
 //    
 //    vector<Condition> conditions;
-//    Condition c("nyle2", "2.3", Condition::OPERATOR_EQUAL);
+//    Condition c("sno", "10", Condition::OPERATOR_MORE_EQUAL);
 //    conditions.insert(conditions.begin(), c);
-////
-////
-//    api.recordDelete("nyle", &conditions);
 //
-//    
-//    api.recordShow("nyle", NULL);
+//
+//    api.recordDelete("student", &conditions);
+//
+//
+    vector<string> name;
+    name.insert(name.begin(), "nyle2");
+    api.recordShow("nyle", &name);
 ////
 ////    cout << "blockOffset : " << im.searchIndex(rm.indexFileNameGet("index1"), "444", Attribute::TYPE_FLOAT);
 //    
-//    return 1;
+    return 0;
 }
 

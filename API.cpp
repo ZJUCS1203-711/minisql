@@ -196,10 +196,10 @@ void API::tableCreate(string tableName, vector<Attribute>* attributeVector, stri
  * show all record of table and the number of the record
  * @param tableName: name of table
  */
-void API::recordShow(string tableName)
+void API::recordShow(string tableName, vector<string>* attributeNameVector)
 {
     vector<Condition> conditionVector;
-    recordShow(tableName, &conditionVector);
+    recordShow(tableName, attributeNameVector, &conditionVector);
 }
 
 /**
@@ -208,7 +208,7 @@ void API::recordShow(string tableName)
  * @param tableName: name of table
  * @param conditionVector: vector of condition
  */
-void API::recordShow(string tableName, vector<Condition>* conditionVector)
+void API::recordShow(string tableName, vector<string>* attributeNameVector, vector<Condition>* conditionVector)
 {
     if (cm->findTable(tableName) == TABLE_FILE)
     {
@@ -216,8 +216,36 @@ void API::recordShow(string tableName, vector<Condition>* conditionVector)
         vector<Attribute> attributeVector;
         attributeGet(tableName, &attributeVector);
         
-        //print all attribute name
-        tableAttributePrint(&attributeVector);
+        vector<string> allAttributeName;
+        if (attributeNameVector == NULL) {
+            for (Attribute attribute : attributeVector)
+            {
+                allAttributeName.insert(allAttributeName.end(), attribute.name);
+            }
+            
+            attributeNameVector = &allAttributeName;
+        }
+        
+        //print attribute name you want to show
+        tableAttributePrint(attributeNameVector);
+        
+        for (string name : (*attributeNameVector))
+        {
+            int i = 0;
+            for (i = 0; i < attributeVector.size(); i++)
+            {
+                if (attributeVector[i].name == name)
+                {
+                    break;
+                }
+            }
+            
+            if (i == attributeVector.size())
+            {
+                cout << "the attribute which you want to print is not exist in the table" << endl;
+                return;
+            }
+        }
         
         blockNode* block = NULL;
         int blockOffset = -1;
@@ -249,14 +277,14 @@ void API::recordShow(string tableName, vector<Condition>* conditionVector)
         if (blockOffset == -1)
         {
             //cout << "if we con't find the block by index,we need to find all block" << endl;
-            num = rm->recordAllShow(tableName, conditionVector);
+            num = rm->recordAllShow(tableName, attributeNameVector,conditionVector);
         }
         else
         {
             fileNode *ftmp = bm.getFile(rm->tableFileNameGet(tableName).c_str());
             block = bm.getBlockByOffset(ftmp, blockOffset);
             //find the block by index,search in the block
-            num = rm->recordBlockShow(tableName, conditionVector, block);
+            num = rm->recordBlockShow(tableName, attributeNameVector, conditionVector, block);
         }
         
         cout << num << " records selected" << endl;
@@ -608,11 +636,11 @@ string API::primaryIndexNameGet(string tableName)
     return  "PRIMARY_" + tableName;
 }
 
-void API::tableAttributePrint(vector<Attribute>* attributeVector)
+void API::tableAttributePrint(vector<string>* name)
 {
-    for (int i = 0; i < (*attributeVector).size(); i++)
+    for (int i = 0; i < (*name).size(); i++)
     {
-        cout << (*attributeVector)[i].name << " ";
+        cout << (*name)[i] << " ";
     }
     cout << endl;
 }

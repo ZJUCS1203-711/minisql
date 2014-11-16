@@ -288,7 +288,7 @@ int Interpreter::interpreter(string s)
 					return 0;
 				}
 			}
-			ap->recordShow(tableName,&conditionVector);
+			ap->recordShow(tableName, NULL,&conditionVector);
 			return 1;
 		}
 	}

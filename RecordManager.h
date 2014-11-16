@@ -16,8 +16,8 @@ public:
     BufferManager bm;
     API *api;
     
-    int recordAllShow(string tableName, vector<Condition>* conditionVector);
-    int recordBlockShow(string tableName, vector<Condition>* conditionVector, blockNode* block);
+    int recordAllShow(string tableName, vector<string>* attributeNameVector, vector<Condition>* conditionVector);
+    int recordBlockShow(string tableName, vector<string>* attributeNameVector, vector<Condition>* conditionVector, blockNode* block);
 
     int recordAllFind(string tableName, vector<Condition>* conditionVector);
     int recordBlockFind(string tableName, vector<Condition>* conditionVector, blockNode* block);
@@ -40,7 +40,7 @@ public:
     string indexFileNameGet(string indexName);
 private:
     bool recordConditionFit(char* recordBegin,int recordSize, vector<Attribute>* attributeVector,vector<Condition>* conditionVector);
-    void recordPrint(char* recordBegin, int recordSize, vector<Attribute>* attributeVector);
+    void recordPrint(char* recordBegin, int recordSize, vector<Attribute>* attributeVector, vector<string> *attributeNameVector);
     bool contentConditionFit(char* content, int type, Condition* condition);
     void contentPrint(char * content, int type);
 };
