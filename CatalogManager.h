@@ -13,6 +13,7 @@ public:
     CatalogManager();
     virtual ~CatalogManager();
     int addIndex(string indexName,string tableName,string attributeName,int type);
+    int revokeIndexOnAttribute(string tableName,string AttributeName,string indexName);
     int findTable(string tableName);
     int findIndex(string indexName);
     int dropTable(string tableName);

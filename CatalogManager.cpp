@@ -157,6 +157,7 @@ int CatalogManager::dropIndex(string index)
             }
             i ++;
         }
+        this->revokeIndexOnAttribute((*i).tableName,(*i).Attribute,(*i).indexName);
         for(;j<(bm.get_usingSize(*btmp)/sizeof(IndexInfo)-1);j++)
         {
             (*i) = *(i + sizeof(IndexInfo));
@@ -168,6 +169,45 @@ int CatalogManager::dropIndex(string index)
         return 1;
     }
 
+    return 0;
+}
+int CatalogManager::revokeIndexOnAttribute(string tableName,string AttributeName,string indexName)
+{
+    fileNode *ftmp = bm.getFile(tableName.c_str());
+    blockNode *btmp = bm.getBlockHead(ftmp);
+
+    if (btmp)
+    {
+
+        char* addressBegin = bm.get_content(*btmp) ;
+        addressBegin += 2;
+        int size = *addressBegin;
+        addressBegin++;
+        Attribute *a = (Attribute *)addressBegin;
+        int i;
+        for(i =0;i<size;i++)
+        {
+            if(a->name == AttributeName)
+            {
+                if(a->index == indexName)
+                {
+                    a->index = "";
+                    bm.set_dirty(*btmp);
+                }
+                else
+                {
+                    cout<<"revoke unknown index: "<<indexName<<" on "<<tableName<<"!"<<endl;
+                    cout<<"Attribute: "<<AttributeName<<" on table "<<tableName<<" has index: "<<a->index<<"!"<<endl;
+                }
+                break;
+            }
+            a ++;
+        }
+        if(i<size)
+            return 1;
+        else
+            return 0;
+    }
     return 0;
 }
 int CatalogManager::indexNameListGet(string tableName, vector<string>* indexNameVector)

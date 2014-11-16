@@ -217,11 +217,13 @@ int Interpreter::interpreter(string s)
 		word = getWord(s,&tmp);
 		if (strcmp(word.c_str(), "*") != 0)	// only accept select *
 		{
-			cout<<"Error in syntax!"<<endl;
-			return 0;
-		}
+			while(strcmp(word.c_str(), "from") != 0)
+			{
 
-		word = getWord(s,&tmp);
+			}
+		}
+		else
+			word = getWord(s,&tmp);
 		if (strcmp(word.c_str(), "from") != 0)
 		{
 			cout<<"Error in syntax!"<<endl;
