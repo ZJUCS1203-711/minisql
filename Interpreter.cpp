@@ -213,17 +213,22 @@ int Interpreter::interpreter(string s)
 
 	else if(strcmp(word.c_str(), "select")==0)
 	{
+		vector<string> attrSelected;
 		string tableName = "";
 		word = getWord(s,&tmp);
 		if (strcmp(word.c_str(), "*") != 0)	// only accept select *
 		{
 			while(strcmp(word.c_str(), "from") != 0)
 			{
-
+				attrSelected.push_back(word);
+				word = getWord(s,&tmp);
 			}
 		}
 		else
+		{
+			attrSelected.push_back(word);
 			word = getWord(s,&tmp);
+		}
 		if (strcmp(word.c_str(), "from") != 0)
 		{
 			cout<<"Error in syntax!"<<endl;
@@ -290,7 +295,7 @@ int Interpreter::interpreter(string s)
 					return 0;
 				}
 			}
-			ap->recordShow(tableName, NULL,&conditionVector);
+			ap->recordShow(tableName, &attrSelected,&conditionVector);
 			return 1;
 		}
 	}
