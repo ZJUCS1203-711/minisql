@@ -226,7 +226,6 @@ int Interpreter::interpreter(string s)
 		}
 		else
 		{
-			attrSelected.push_back(word);
 			word = getWord(s,&tmp);
 		}
 		if (strcmp(word.c_str(), "from") != 0)
@@ -248,7 +247,10 @@ int Interpreter::interpreter(string s)
 		word = getWord(s,&tmp);
 		if (word.empty())	// without condition
 		{
-			ap->recordShow(tableName);
+			if(attrSelected.size()==0)
+				ap->recordShow(tableName);
+			else
+				ap->recordShow(tableName,&attrSelected);
 			return 1;
 		}
 		else if (strcmp(word.c_str(),"where") == 0)
@@ -295,7 +297,11 @@ int Interpreter::interpreter(string s)
 					return 0;
 				}
 			}
-			ap->recordShow(tableName, &attrSelected,&conditionVector);
+			if(attrSelected.size()==0)
+				ap->recordShow(tableName,NULL,&conditionVector);
+			else
+				ap->recordShow(tableName, &attrSelected,&conditionVector);
+			
 			return 1;
 		}
 	}
