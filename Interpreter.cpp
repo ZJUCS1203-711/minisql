@@ -427,7 +427,6 @@ int Interpreter::interpreter(string s)
 
 	else if (strcmp(word.c_str(), "insert") == 0)
 	{
-		cout<<"-------------test part for insert-------------"<<endl;
 		string tableName = "";
 		std::vector<string> valueVector;
 		word = getWord(s,&tmp);
@@ -438,7 +437,6 @@ int Interpreter::interpreter(string s)
 			if (word.empty())
 				throw SyntaxException();
 			tableName = word;
-			cout<<"table name is "<<tableName<<endl;
 			word = getWord(s,&tmp);
 			if (strcmp(word.c_str(),"values") != 0)
 				throw SyntaxException();
@@ -446,26 +444,19 @@ int Interpreter::interpreter(string s)
 			if (strcmp(word.c_str(),"(") != 0)
 				throw SyntaxException();
 			word = getWord(s,&tmp);
-			cout<<"values are : "<<endl;
 			while (!word.empty() && strcmp(word.c_str(),")") != 0)
 			{
 				valueVector.push_back(word);
-				cout<<word<<" ";
 				word = getWord(s,&tmp);
 				if (strcmp(word.c_str(),",") == 0)  // bug here
 					word = getWord(s,&tmp);
 			}
 			if (strcmp(word.c_str(),")") != 0)
 				throw SyntaxException();
-			cout<<endl;
 		} catch (SyntaxException&){
 			cout<<"Syntax Error!"<<endl;
 			return 0;
 		}
-		cout<<"valueVector have: "<<endl;
-        for(int k = 0;k<valueVector.size();k++)
-            cout<<valueVector[k]<<" ";
-        cout<<endl;
 		ap->recordInsert(tableName,&valueVector);
 		return 1;
 	}
