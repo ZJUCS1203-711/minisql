@@ -652,10 +652,12 @@ string API::primaryIndexNameGet(string tableName)
  */
 void API::tableAttributePrint(vector<string>* attributeNameVector)
 {
-    for (int i = 0; i < (*attributeNameVector).size(); i++)
+    int i = 0;
+    for ( i = 0; i < (*attributeNameVector).size(); i++)
     {
         printf("%s ", (*attributeNameVector)[i].c_str());
     }
-    printf("\n");
+    if (i != 0)
+        printf("\n");
 }
 

@@ -241,7 +241,7 @@ int CatalogManager::deleteValue(string tableName, int deleteNum)
     {
 
         char* addressBegin = bm.get_content(*btmp) ;
-        int  * recordNum = addressBegin;
+        int * recordNum = (int*)addressBegin;
         if((*recordNum) <deleteNum)
         {
             cout<<"error in CatalogManager::deleteValue"<<endl;
@@ -251,7 +251,7 @@ int CatalogManager::deleteValue(string tableName, int deleteNum)
             (*recordNum) -= deleteNum;
 
         bm.set_dirty(*btmp);
-        return recordNum;
+        return *recordNum;
     }
     return 0;
 }
@@ -264,7 +264,7 @@ int CatalogManager::insertRecord(string tableName, int recordNum)
     {
 
         char* addressBegin = bm.get_content(*btmp) ;
-        int * originalRecordNum = *addressBegin;
+        int * originalRecordNum = (int*)addressBegin;
         *originalRecordNum += recordNum;
         bm.set_dirty(*btmp);
         return *originalRecordNum;
@@ -280,7 +280,7 @@ int CatalogManager::getRecordNum(string tableName)
     if (btmp)
     {
         char* addressBegin = bm.get_content(*btmp) ;
-        int * recordNum = *addressBegin;
+        int * recordNum = (int*)addressBegin;
         return *recordNum;
     }
     return 0;
@@ -301,7 +301,7 @@ int CatalogManager::addTable(string tableName, vector<Attribute>* attributeVecto
     if (btmp )
     {
         char* addressBegin = bm.get_content(*btmp) ;
-        int * size = addressBegin;
+        int * size = (int*)addressBegin;
         *size = 0;// 0 record number
         addressBegin += sizeof(int);
         *addressBegin = primaryKeyLocation;//1 as what it says
