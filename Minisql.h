@@ -45,7 +45,7 @@ extern clock_t start;
 extern void print();
 
 #define MAX_FILE_NUM 40
-#define MAX_BLOCK_NUM 100
+#define MAX_BLOCK_NUM 300
 #define MAX_FILE_NAME 100
 
 #endif

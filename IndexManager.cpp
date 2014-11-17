@@ -215,7 +215,7 @@ void IndexManager::insertIndex(string filePath,string key,offsetNumber blockOffs
         else
         {
             itString->second->insertKey(key,blockOffset);
-            itString->second->debug_print();
+         //   itString->second->debug_print();
         }
     }
 }
