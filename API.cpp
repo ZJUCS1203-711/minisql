@@ -33,7 +33,7 @@ void API::tableDrop(string tableName)
     indexNameListGet(tableName, &indexNameVector);
     for (int i = 0; i < indexNameVector.size(); i++)
     {
-        cout << indexNameVector[i] << endl;
+        printf("%s", indexNameVector[i].c_str());
         
         indexDrop(indexNameVector[i]);
     }
@@ -43,7 +43,7 @@ void API::tableDrop(string tableName)
     {
         //delete a table information
         cm->dropTable(tableName);
-        cout << "Drop table " << tableName << " successfully" << endl;
+        printf("Drop table %s successfully\n", tableName.c_str());
     }
 }
 
@@ -56,7 +56,7 @@ void API::indexDrop(string indexName)
 {
     if (cm->findIndex(indexName) != INDEX_FILE)
     {
-        cout << "There is no index " << indexName << endl;
+        printf("There is no index %s \n", indexName.c_str());
         return;
     }
     
@@ -68,7 +68,7 @@ void API::indexDrop(string indexName)
         int indexType = cm->getIndexType(indexName);
         if (indexType == -2)
         {
-            cout << "" << "error";
+            printf("error\n");
             return;
         }
         
@@ -77,7 +77,7 @@ void API::indexDrop(string indexName)
         
         //delete a index tree
         im->dropIndex(rm->indexFileNameGet(indexName), indexType);
-        cout << "Drop index " << indexName << " successfully" << endl;
+        printf("Drop index %s successfully\n", indexName.c_str());
     }
 }
 
@@ -142,7 +142,7 @@ void API::indexCreate(string indexName, string tableName, string attributeName)
         
         //recordManager insert already record to index
         rm->indexRecordAllAlreadyInsert(tableName, indexName);
-        cout << "Create index " << indexName << " successfully" << endl;
+        printf("Create index %s successfully\n", indexName.c_str());
     }
     else
     {
@@ -180,7 +180,7 @@ void API::tableCreate(string tableName, vector<Attribute>* attributeVector, stri
         //CatalogManager to create a table information
         cm->addTable(tableName, attributeVector, primaryKeyName, primaryKeyLocation);
    
-        cout << "Create table " << tableName << " successfully" << endl;
+        printf("Create table %s successfully\n", tableName.c_str());
     }
     
     if (primaryKeyName != "")
@@ -287,7 +287,7 @@ void API::recordShow(string tableName, vector<string>* attributeNameVector, vect
             num = rm->recordBlockShow(tableName, attributeNameVector, conditionVector, blockOffset);
         }
         
-        cout << num << " records selected" << endl;
+        printf("%d records selected\n", num);
     }
     else
     {
@@ -365,7 +365,7 @@ void API::recordInsert(string tableName, vector<string>* recordContent)
     {
         recordIndexInsert(recordString, recordSize, &attributeVector, blockOffset);
         cm->insertRecord(tableName, 1);
-        cout << "insert record into table " << tableName << " successful" << endl;
+        printf("insert record into table %s successful", tableName.c_str());
     }
     else
     {
@@ -430,7 +430,7 @@ void API::recordDelete(string tableName, vector<Condition>* conditionVector)
     
     //delete the number of record in in the table
     cm->deleteValue(tableName, num);
-    cout << "delete " << num << " record in table " << tableName << endl;
+    printf("delete %d record in table %s\n", num, tableName.c_str());
 }
 
 /**
@@ -654,8 +654,8 @@ void API::tableAttributePrint(vector<string>* attributeNameVector)
 {
     for (int i = 0; i < (*attributeNameVector).size(); i++)
     {
-        cout << (*attributeNameVector)[i] << " ";
+        printf("%s ", (*attributeNameVector)[i].c_str());
     }
-    cout << endl;
+    printf("\n");
 }
 

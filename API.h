@@ -7,8 +7,7 @@
 #include "IndexInfo.h"
 #include <string>
 #include <vector>
-#include <iostream>
-using namespace std;
+#include <stdio.h>
 
 class CatalogManager;
 class RecordManager;

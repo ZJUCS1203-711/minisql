@@ -212,7 +212,7 @@ int RecordManager::recordBlockShow(string tableName, vector<string>* attributeNa
         {
             count ++;
             recordPrint(recordBegin, recordSize, &attributeVector, attributeNameVector);
-            cout << endl;
+            printf("\n");
         }
         
         recordBegin += recordSize;
@@ -588,18 +588,19 @@ void RecordManager::contentPrint(char * content, int type)
     {
         //if the content is a int
         int tmp = *((int *) content);   //get content value by point
-        cout << tmp << " ";
+        printf("%d ", tmp);
     }
     else if (type == Attribute::TYPE_FLOAT)
     {
         //if the content is a float
         float tmp = *((float *) content);   //get content value by point
-        cout << tmp << " ";
+        printf("%f ", tmp);
     }
     else
     {
         //if the content is a string
-        cout << content << " ";
+        string tmp = content;
+        printf("%s ", tmp.c_str());
     }
 
 }
