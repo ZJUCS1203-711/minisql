@@ -84,7 +84,6 @@ int CatalogManager::addIndex(string indexName,string tableName,string Attribute,
 
             char* addressBegin;
             addressBegin = bm.get_content(*btmp) + bm.get_usingSize(*btmp);
-            cout<<"address:"<<(int *)addressBegin<<endl;
             memcpy(addressBegin, &i, sizeof(IndexInfo));
             bm.set_usingSize(*btmp, bm.get_usingSize(*btmp) + sizeof(IndexInfo));
             bm.set_dirty(*btmp);
