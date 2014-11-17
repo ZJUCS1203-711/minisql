@@ -117,11 +117,11 @@ int RecordManager::recordInsert(string tableName,char* record, int recordSize)
     return -1;
 }
 
-
 /**
  *
  * print all record of a table meet requirement
  * @param tableName: name of table
+ * @param attributeNameVector: the attribute list
  * @param conditionVector: the conditions list
  * @return int: the number of the record meet requirements(-1 represent error)
  */
@@ -157,8 +157,32 @@ int RecordManager::recordAllShow(string tableName, vector<string>* attributeName
  *
  * print record of a table in a block
  * @param tableName: name of table
- * @param block: search record in the block
+ * @param attributeNameVector: the attribute list
  * @param conditionVector: the conditions list
+ * @param blockOffset: the block's offsetNum
+ * @return int: the number of the record meet requirements in the block(-1 represent error)
+ */
+int RecordManager::recordBlockShow(string tableName, vector<string>* attributeNameVector, vector<Condition>* conditionVector, int blockOffset)
+{
+    fileNode *ftmp = bm.getFile(tableFileNameGet(tableName).c_str());
+    blockNode* block = bm.getBlockByOffset(ftmp, blockOffset);
+    if (block == NULL)
+    {
+        return -1;
+    }
+    else
+    {
+        return  recordBlockShow(tableName, attributeNameVector, conditionVector, block);
+    }
+}
+
+/**
+ *
+ * print record of a table in a block
+ * @param tableName: name of table
+ * @param attributeNameVector: the attribute list
+ * @param conditionVector: the conditions list
+ * @param block: search record in the block
  * @return int: the number of the record meet requirements in the block(-1 represent error)
  */
 int RecordManager::recordBlockShow(string tableName, vector<string>* attributeNameVector, vector<Condition>* conditionVector, blockNode* block)
@@ -178,8 +202,10 @@ int RecordManager::recordBlockShow(string tableName, vector<string>* attributeNa
     int recordSize = api->recordSizeGet(tableName);
 
     api->attributeGet(tableName, &attributeVector);
+    char* blockBegin = bm.get_content(*block);
+    size_t usingSize = bm.get_usingSize(*block);
     
-    while (recordBegin - bm.get_content(*block)  < bm.get_usingSize(*block))
+    while (recordBegin - blockBegin  < usingSize)
     {
         //if the recordBegin point to a record
         
@@ -195,7 +221,6 @@ int RecordManager::recordBlockShow(string tableName, vector<string>* attributeNa
     
     return count;
 }
-
 
 /**
  *
@@ -311,8 +336,30 @@ int RecordManager::recordAllDelete(string tableName, vector<Condition>* conditio
  *
  * delete record of a table in a block
  * @param tableName: name of table
- * @param block: search record in the block
  * @param conditionVector: the conditions list
+ * @param blockOffset: the block's offsetNum
+ * @return int: the number of the record meet requirements in the block(-1 represent error)
+ */
+int RecordManager::recordBlockDelete(string tableName,  vector<Condition>* conditionVector, int blockOffset)
+{
+    fileNode *ftmp = bm.getFile(tableFileNameGet(tableName).c_str());
+    blockNode* block = bm.getBlockByOffset(ftmp, blockOffset);
+    if (block == NULL)
+    {
+        return -1;
+    }
+    else
+    {
+        return  recordBlockDelete(tableName, conditionVector, block);
+    }
+}
+
+/**
+ *
+ * delete record of a table in a block
+ * @param tableName: name of table
+ * @param conditionVector: the conditions list
+ * @param block: search record in the block
  * @return int: the number of the record meet requirements in the block(-1 represent error)
  */
 int RecordManager::recordBlockDelete(string tableName,  vector<Condition>* conditionVector, blockNode* block)
@@ -497,6 +544,7 @@ bool RecordManager::recordConditionFit(char* recordBegin,int recordSize, vector<
  * @param recordBegin: point to a record
  * @param recordSize: size of the record
  * @param attributeVector: the attribute list of the record
+ * @param attributeVector: the name list of all attribute you want to print
  */
 void RecordManager::recordPrint(char* recordBegin, int recordSize, vector<Attribute>* attributeVector, vector<string> *attributeNameVector)
 {
@@ -556,8 +604,6 @@ void RecordManager::contentPrint(char * content, int type)
     }
 
 }
-
-
 
 /**
  *

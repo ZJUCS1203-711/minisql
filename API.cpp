@@ -156,6 +156,7 @@ void API::indexCreate(string indexName, string tableName, string attributeName)
  * @param tableName: name of table
  * @param attributeVector: vector of attribute
  * @param primaryKeyName: primary key of a table (default: "")
+ * @param primaryKeyLocation: the primary position in the table
  */
 void API::tableCreate(string tableName, vector<Attribute>* attributeVector, string primaryKeyName,int primaryKeyLocation)
 {
@@ -193,8 +194,9 @@ void API::tableCreate(string tableName, vector<Attribute>* attributeVector, stri
 
 /**
  *
- * show all record of table and the number of the record
+ * show all record of attribute in the table and the number of the record
  * @param tableName: name of table
+ * @param attributeNameVector: vector of name of attribute
  */
 void API::recordShow(string tableName, vector<string>* attributeNameVector)
 {
@@ -204,8 +206,9 @@ void API::recordShow(string tableName, vector<string>* attributeNameVector)
 
 /**
  *
- * show the record matching the coditions in the table and the number of the record
+ * show the record matching the coditions of attribute in the table and the number of the record
  * @param tableName: name of table
+ * @param attributeNameVector: vector of name of attribute
  * @param conditionVector: vector of condition
  */
 void API::recordShow(string tableName, vector<string>* attributeNameVector, vector<Condition>* conditionVector)
@@ -248,7 +251,6 @@ void API::recordShow(string tableName, vector<string>* attributeNameVector, vect
             }
         }
         
-        blockNode* block = NULL;
         int blockOffset = -1;
         if (conditionVector != NULL)
         {
@@ -282,10 +284,9 @@ void API::recordShow(string tableName, vector<string>* attributeNameVector, vect
         }
         else
         {
-            fileNode *ftmp = bm.getFile(rm->tableFileNameGet(tableName).c_str());
-            block = bm.getBlockByOffset(ftmp, blockOffset);
+            
             //find the block by index,search in the block
-            num = rm->recordBlockShow(tableName, attributeNameVector, conditionVector, block);
+            num = rm->recordBlockShow(tableName, attributeNameVector, conditionVector, blockOffset);
         }
         
         cout << num << " records selected" << endl;
@@ -407,7 +408,6 @@ void API::recordDelete(string tableName, vector<Condition>* conditionVector)
     vector<Attribute> attributeVector;
     attributeGet(tableName, &attributeVector);
 
-    blockNode* block = NULL;
     int blockOffset = -1;
     if (conditionVector != NULL)
     {
@@ -434,10 +434,8 @@ void API::recordDelete(string tableName, vector<Condition>* conditionVector)
     }
     else
     {
-        fileNode *ftmp = bm.getFile(rm->tableFileNameGet(tableName).c_str());
-        block = bm.getBlockByOffset(ftmp, blockOffset);
         //find the block by index,search in the block
-        num = rm->recordBlockDelete(tableName, conditionVector, block);
+        num = rm->recordBlockDelete(tableName, conditionVector, blockOffset);
     }
     
     cout << num << "records selected" << endl;
@@ -446,7 +444,6 @@ void API::recordDelete(string tableName, vector<Condition>* conditionVector)
     cm->deleteValue(tableName, num);
     cout << "delete " << num << " record in table " << tableName << endl;
 }
-
 
 /**
  *
@@ -496,6 +493,11 @@ int API::indexNameListGet(string tableName, vector<string>* indexNameVector)
     return cm->indexNameListGet(tableName, indexNameVector);
 }
 
+/**
+ *
+ * get the vector of all name of index's file
+ * @param indexNameVector: will set all index's
+ */
 void API::allIndexAddressInfoGet(vector<IndexInfo> *indexNameVector)
 {
     cm->getAllIndex(indexNameVector);
@@ -504,7 +506,6 @@ void API::allIndexAddressInfoGet(vector<IndexInfo> *indexNameVector)
         (*indexNameVector)[i].indexName = rm->indexFileNameGet((*indexNameVector)[i].indexName);
     }
 }
-
 
 /**
  *
@@ -524,7 +525,9 @@ int API::attributeGet(string tableName, vector<Attribute>* attributeVector)
  *
  * insert all index value of a record to index tree
  * @param recordBegin: point to record begin
+ * @param recordSize: size of the record
  * @param attributeVector:  a point to vector of attributeType(which would change)
+ * @param blockOffset: the block offset num
  */
 void API::recordIndexInsert(char* recordBegin,int recordSize, vector<Attribute>* attributeVector,  int blockOffset)
 {
@@ -544,6 +547,14 @@ void API::recordIndexInsert(char* recordBegin,int recordSize, vector<Attribute>*
     }
 }
 
+/**
+ *
+ * insert a value to index tree
+ * @param indexName: name of index
+ * @param contentBegin: address of content
+ * @param type: the type of content
+ * @param blockOffset: the block offset num
+ */
 void API::indexInsert(string indexName, char* contentBegin, int type, int blockOffset)
 {
     string content= "";
@@ -573,6 +584,14 @@ void API::indexInsert(string indexName, char* contentBegin, int type, int blockO
     im->insertIndex(rm->indexFileNameGet(indexName), content, blockOffset, type);
 }
 
+/**
+ *
+ * delete all index value of a record to index tree
+ * @param recordBegin: point to record begin
+ * @param recordSize: size of the record
+ * @param attributeVector:  a point to vector of attributeType(which would change)
+ * @param blockOffset: the block offset num
+ */
 void API::recordIndexDelete(char* recordBegin,int recordSize, vector<Attribute>* attributeVector, int blockOffset)
 {
     cout << "recordIndexDelete: ====" << endl;
@@ -618,7 +637,10 @@ void API::recordIndexDelete(char* recordBegin,int recordSize, vector<Attribute>*
 
 }
 
-
+/**
+ * get if the table
+ * @param tableName the name of the table
+ */
 int API::tableExist(string tableName)
 {
     if (cm->findTable(tableName) != TABLE_FILE)
@@ -632,35 +654,25 @@ int API::tableExist(string tableName)
     }
 }
 
+/**
+ * get the primary index Name by table
+ * @param tableName : name of the table
+ */
 string API::primaryIndexNameGet(string tableName)
 {
     return  "PRIMARY_" + tableName;
 }
 
-void API::tableAttributePrint(vector<string>* name)
+/**
+ * printe attribute name
+ * @param attributeNameVector: the vector of attribute's name
+ */
+void API::tableAttributePrint(vector<string>* attributeNameVector)
 {
-    for (int i = 0; i < (*name).size(); i++)
+    for (int i = 0; i < (*attributeNameVector).size(); i++)
     {
-        cout << (*name)[i] << " ";
+        cout << (*attributeNameVector)[i] << " ";
     }
     cout << endl;
 }
-
-///**
-// *
-// * insert a value to index tree
-// * @param indexName:  name of index
-// * @param value: value that want to change
-// */
-//void API::indexValueInsert(string indexName, string value, int blockOffset)
-//{
-//    if(cm->findFile(indexName) != INDEX_FILE)
-//    {
-//         cout << "There is no index " << indexName << endl;
-//        return;
-//    }
-//
-//    im->indexValueInsert(indexName, value, blockOffset);
-//}
-
 
