@@ -1,4 +1,4 @@
-#include<iostream>
+#include <iostream>
 #include "Interpreter.h"
 #include "CatalogManager.h"
 #include "RecordManager.h"
