@@ -40,7 +40,6 @@ struct fileNode
     fileNode * preFile;
 };
 
-
 extern clock_t start;
 extern void print();
 

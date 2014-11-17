@@ -145,6 +145,7 @@ int RecordManager::recordAllShow(string tableName, vector<string>* attributeName
         else
         {
             int recordBlockNum = recordBlockShow(tableName, attributeNameVector, conditionVector, btmp);
+            cout << "---->rm:record show over! :" ;print();
             count += recordBlockNum;
             btmp = bm.getNextBlock(ftmp, btmp);
         }
