@@ -179,7 +179,7 @@ int CatalogManager::revokeIndexOnAttribute(string tableName,string AttributeName
     {
 
         char* addressBegin = bm.get_content(*btmp) ;
-        addressBegin += 2;
+        addressBegin += (1+sizeof(int));
         int size = *addressBegin;
         addressBegin++;
         Attribute *a = (Attribute *)addressBegin;
@@ -241,15 +241,15 @@ int CatalogManager::deleteValue(string tableName, int deleteNum)
     {
 
         char* addressBegin = bm.get_content(*btmp) ;
-        int recordNum = *addressBegin;
-        if(recordNum<deleteNum)
+        int  * recordNum = addressBegin;
+        if((*recordNum) <deleteNum)
         {
             cout<<"error in CatalogManager::deleteValue"<<endl;
             return 0;
         }
         else
-            recordNum -= deleteNum;
-        *addressBegin = recordNum;
+            (*recordNum) -= deleteNum;
+
         bm.set_dirty(*btmp);
         return recordNum;
     }
@@ -264,11 +264,10 @@ int CatalogManager::insertRecord(string tableName, int recordNum)
     {
 
         char* addressBegin = bm.get_content(*btmp) ;
-        int originalRecordNum = *addressBegin;
-        originalRecordNum += recordNum;
-        *addressBegin = originalRecordNum;
+        int * originalRecordNum = *addressBegin;
+        *originalRecordNum += recordNum;
         bm.set_dirty(*btmp);
-        return recordNum;
+        return *originalRecordNum;
     }
     return 0;
 }
@@ -282,8 +281,8 @@ int CatalogManager::getRecordNum(string tableName)
     {
 
         char* addressBegin = bm.get_content(*btmp) ;
-        int recordNum = *addressBegin;
-        return recordNum;
+        int * recordNum = *addressBegin;
+        return *recordNum;
     }
     return 0;
 }
@@ -303,8 +302,9 @@ int CatalogManager::addTable(string tableName, vector<Attribute>* attributeVecto
     if (btmp )
     {
         char* addressBegin = bm.get_content(*btmp) ;
-        *addressBegin = 0;// 0 record number
-        addressBegin++;
+        int * size = addressBegin;
+        *size = 0;// 0 record number
+        addressBegin += sizeof(int);
         *addressBegin = primaryKeyLocation;//1 as what it says
         addressBegin++;
         *addressBegin = (*attributeVector).size();// 2 attribute number
@@ -315,7 +315,7 @@ int CatalogManager::addTable(string tableName, vector<Attribute>* attributeVecto
             memcpy(addressBegin, &((*attributeVector)[i]), sizeof(Attribute));
             addressBegin += sizeof(Attribute);
         }
-        bm.set_usingSize(*btmp, bm.get_usingSize(*btmp) + (*attributeVector).size()*sizeof(Attribute)+3);
+        bm.set_usingSize(*btmp, bm.get_usingSize(*btmp) + (*attributeVector).size()*sizeof(Attribute)+2+sizeof(int));
         bm.set_dirty(*btmp);
         return 1;
     }
@@ -330,7 +330,7 @@ int CatalogManager::setIndexOnAttribute(string tableName,string AttributeName,st
     {
 
         char* addressBegin = bm.get_content(*btmp) ;
-        addressBegin += 2;
+        addressBegin += 1+sizeof(int);
         int size = *addressBegin;
         addressBegin++;
         Attribute *a = (Attribute *)addressBegin;
@@ -361,7 +361,7 @@ int CatalogManager::attributeGet(string tableName, vector<Attribute>* attributeV
     {
 
         char* addressBegin = bm.get_content(*btmp) ;
-        addressBegin += 2;
+        addressBegin += 1+sizeof(int);
         int size = *addressBegin;
         addressBegin++;
         Attribute *a = (Attribute *)addressBegin;
@@ -385,7 +385,7 @@ int CatalogManager::calcuteLenth(string tableName)
     {
         int singleRecordSize =  0;
         char* addressBegin = bm.get_content(*btmp) ;
-        addressBegin += 2;
+        addressBegin += 1+sizeof(int);
         int size = *addressBegin;
         addressBegin++;
         Attribute *a = (Attribute *)addressBegin;
