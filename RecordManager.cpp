@@ -194,7 +194,6 @@ int RecordManager::recordBlockShow(string tableName, vector<string>* attributeNa
         return -1;
     }
     
-    cout << "---->rm:record show : blocknum:" << block->offsetNum << " ---->"; print();
     int count = 0;
     
     char* recordBegin = bm.get_content(*block);

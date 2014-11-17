@@ -160,12 +160,12 @@ void API::indexCreate(string indexName, string tableName, string attributeName)
  */
 void API::tableCreate(string tableName, vector<Attribute>* attributeVector, string primaryKeyName,int primaryKeyLocation)
 {
-    cout << "=======api::tablecreate=======" << endl
-    << "tableName: " << tableName << "; primaryKeyName: " << primaryKeyName << "; location: " << primaryKeyLocation << endl;
-    for (int i = 0; i < (* attributeVector).size(); i++)
-    {
-        (* attributeVector)[i].print();
-    }
+//    cout << "=======api::tablecreate=======" << endl
+//    << "tableName: " << tableName << "; primaryKeyName: " << primaryKeyName << "; location: " << primaryKeyLocation << endl;
+//    for (int i = 0; i < (* attributeVector).size(); i++)
+//    {
+//        (* attributeVector)[i].print();
+//    }
     
     
     if(cm->findTable(tableName) == TABLE_FILE)
@@ -189,7 +189,6 @@ void API::tableCreate(string tableName, vector<Attribute>* attributeVector, stri
         string indexName = primaryIndexNameGet(tableName);
         indexCreate(indexName, tableName, primaryKeyName);
     }
-    cout << "=======api::tablecreate=======" << endl;
 }
 
 /**
@@ -213,7 +212,6 @@ void API::recordShow(string tableName, vector<string>* attributeNameVector)
  */
 void API::recordShow(string tableName, vector<string>* attributeNameVector, vector<Condition>* conditionVector)
 {
-    cout << "api:record show : ----->";print();
     if (cm->findTable(tableName) == TABLE_FILE)
     {
         int num = 0;
@@ -305,12 +303,6 @@ void API::recordShow(string tableName, vector<string>* attributeNameVector, vect
  */
 void API::recordInsert(string tableName, vector<string>* recordContent)
 {
-    cout << "=======api::recordInsert=======" << endl;
-    cout << "tableName:" << tableName << endl;
-    for (int i = 0; i < (*recordContent).size(); i++) {
-        cout << (*recordContent)[i] << endl;
-    }
-    
     if (!tableExist(tableName)) return;
     
     string indexName;
@@ -371,7 +363,6 @@ void API::recordInsert(string tableName, vector<string>* recordContent)
     
     if(blockOffset >= 0)
     {
-        cout << "before index insert========= " << blockOffset << endl;
         recordIndexInsert(recordString, recordSize, &attributeVector, blockOffset);
         cm->insertRecord(tableName, 1);
         cout << "insert record into table " << tableName << " successful" << endl;
@@ -380,7 +371,6 @@ void API::recordInsert(string tableName, vector<string>* recordContent)
     {
         cout << "insert record into table " << tableName << " fail" << endl;
     }
-    cout << "=======api::recordInsert=======" << endl;
 }
 
 /**
@@ -437,8 +427,6 @@ void API::recordDelete(string tableName, vector<Condition>* conditionVector)
         //find the block by index,search in the block
         num = rm->recordBlockDelete(tableName, conditionVector, blockOffset);
     }
-    
-    cout << num << "records selected" << endl;
     
     //delete the number of record in in the table
     cm->deleteValue(tableName, num);
@@ -532,10 +520,8 @@ int API::attributeGet(string tableName, vector<Attribute>* attributeVector)
 void API::recordIndexInsert(char* recordBegin,int recordSize, vector<Attribute>* attributeVector,  int blockOffset)
 {
     char* contentBegin = recordBegin;
-    cout << "recordIndexInsert()=============" << endl;
     for (int i = 0; i < (*attributeVector).size() ; i++)
     {
-        cout << "name : " << (*attributeVector)[i].name << " index: " << (*attributeVector)[i].index <<endl;
         int type = (*attributeVector)[i].type;
         int typeSize = typeSizeGet(type);
         if ((*attributeVector)[i].index != "")
@@ -580,7 +566,6 @@ void API::indexInsert(string indexName, char* contentBegin, int type, int blockO
         tmp << stringTmp;
     }
     tmp >> content;
-    cout << "im->insert(" <<rm->indexFileNameGet(indexName) << "," << content << "," <<blockOffset << "," << type << ")" << endl;
     im->insertIndex(rm->indexFileNameGet(indexName), content, blockOffset, type);
 }
 
@@ -594,7 +579,6 @@ void API::indexInsert(string indexName, char* contentBegin, int type, int blockO
  */
 void API::recordIndexDelete(char* recordBegin,int recordSize, vector<Attribute>* attributeVector, int blockOffset)
 {
-    cout << "recordIndexDelete: ====" << endl;
     char* contentBegin = recordBegin;
     for (int i = 0; i < (*attributeVector).size() ; i++)
     {
@@ -628,7 +612,6 @@ void API::recordIndexDelete(char* recordBegin,int recordSize, vector<Attribute>*
             }
             
             tmp >> content;
-            cout << "im->deleteIndexByKey" << rm->indexFileNameGet((*attributeVector)[i].index) << "," << content << "," << type << ")" << endl;
             im->deleteIndexByKey(rm->indexFileNameGet((*attributeVector)[i].index), content, type);
 
         }
