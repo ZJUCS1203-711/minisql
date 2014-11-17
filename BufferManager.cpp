@@ -10,6 +10,7 @@
 #include "Minisql.h"
 #include <stdlib.h>
 #include <string>
+#include <queue>
 
 /**
  *  Constructor Function: allocate memories for the pools 
@@ -452,6 +453,37 @@ blockNode* BufferManager::getBlockByOffset(fileNode* file, int offsetNumber)
         }
         return btmp;
     }
+}
+
+/**
+ * delete the file node and its block node
+ *
+ * @param const char * fileName
+ *
+ * @return
+ */
+void BufferManager::delete_fileNode(const char * fileName)
+{
+    fileNode* ftmp = getFile(fileName);
+    blockNode* btmp = getBlockHead(ftmp);
+    queue<blockNode*> blockQ;
+    while (true) {
+        if(btmp == NULL) return;
+        blockQ.push(btmp);
+        if(btmp->ifbottom) break;
+        btmp = getNextBlock(ftmp,btmp);
+    }
+    total_block -= blockQ.size();
+    while(!blockQ.empty())
+    {
+        init_block(*blockQ.back());
+        blockQ.pop();
+    }
+    if(ftmp->preFile) ftmp->preFile->nextFile = ftmp->nextFile;
+    if(ftmp->nextFile) ftmp->nextFile->preFile = ftmp->preFile;
+    if(fileHead == ftmp) fileHead = ftmp->nextFile;
+    init_file(*ftmp);
+    total_file --;
 }
 
 

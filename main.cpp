@@ -105,7 +105,7 @@ int main(int argc,char * argv[])
                 finish = clock();
                 double duration = (double)(finish - start) / CLOCKS_PER_SEC;
                 duration *= 1000;
-                printf( "The duration is %2.1f milliseconds\n", duration );
+                printf( "The duration is %2.1f milliseconds\n", duration);
             }
         }
 

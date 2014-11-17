@@ -21,6 +21,7 @@ CatalogManager::~CatalogManager() {
 
 int CatalogManager::dropTable(string tableName)
 {
+    bm.delete_fileNode(tableName.c_str());
     if (remove(tableName.c_str()))
     {
         return 0;
