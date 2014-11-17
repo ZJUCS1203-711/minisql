@@ -281,7 +281,6 @@ int CatalogManager::getRecordNum(string tableName)
 
     if (btmp)
     {
-
         char* addressBegin = bm.get_content(*btmp) ;
         int recordNum = *addressBegin;
         return recordNum;

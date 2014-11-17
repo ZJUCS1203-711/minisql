@@ -365,7 +365,7 @@ void API::recordInsert(string tableName, vector<string>* recordContent)
     {
         recordIndexInsert(recordString, recordSize, &attributeVector, blockOffset);
         cm->insertRecord(tableName, 1);
-        printf("insert record into table %s successful", tableName.c_str());
+        printf("insert record into table %s successful\n", tableName.c_str());
     }
     else
     {
