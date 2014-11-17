@@ -29,7 +29,7 @@ class BufferManager
         void writtenBackToDisk(const char* fileName,blockNode* block);
         void clean_dirty(blockNode &block);
         size_t getUsingSize(blockNode* block);
-        static const int BLOCK_SIZE = 8192;
+        static const int BLOCK_SIZE = 4096;
 
     public:
         BufferManager();

@@ -574,7 +574,6 @@ bool BPlusTree<KeyType>::adjustAfterDelete(Node pNode)
     }
     if(pNode->isRoot())
     {
-        cout << "if root" << endl;
         if(pNode->count > 0) //do not need to adjust
         {
             return true;
@@ -583,7 +582,6 @@ bool BPlusTree<KeyType>::adjustAfterDelete(Node pNode)
         {
             if(root->isLeaf) //the true will be an empty tree
             {
-                cout << "if(root->isLeaf) //the true will be an empty tree" << endl;
                 delete pNode;
                 root = NULL;
                 leafHead = NULL;
@@ -592,7 +590,6 @@ bool BPlusTree<KeyType>::adjustAfterDelete(Node pNode)
             }
             else // root will be the leafhead
             {
-                cout << "else // root will be the leafhead" << endl;
                 root = pNode -> childs[0];
                 root -> parent = NULL;
                 delete pNode;
@@ -606,18 +603,14 @@ bool BPlusTree<KeyType>::adjustAfterDelete(Node pNode)
         Node parent = pNode->parent,brother = NULL;
         if(pNode->isLeaf)
         {
-            cout << "if1 if(pNode->isLeaf)" << endl;
             size_t index = 0;
             parent->search(pNode->keys[0],index);
-            cout << "index:" << index << endl;
 
             if((parent->childs[0] != pNode) && (index + 1 == parent->count)) //choose the left brother to merge or replace
             {
-                cout << "if(index + 1 == parent->count) //choose the left brother to merge or replace" << endl;
                 brother = parent->childs[index];
                 if(brother->count > minmumKey) // choose the most right key of brother to add to the left hand of the pnode
                 {
-                    cout << "if(brother->count > minmumKey) // choose the most right key of brother to add to the left hand of the pnode?" << endl;
                     for(size_t i = pNode->count;i > 0;i --)
                     {
                         pNode->keys[i] = pNode->keys[i-1];
@@ -634,7 +627,6 @@ bool BPlusTree<KeyType>::adjustAfterDelete(Node pNode)
                 } // end add
                 else // merge the node with its brother
                 {
-                    cout << "else // merge the node with its brother" << endl;
                     parent->removeAt(index);
                     
                     for(int i = 0;i < pNode->count;i ++)
@@ -654,14 +646,12 @@ bool BPlusTree<KeyType>::adjustAfterDelete(Node pNode)
             }// end of the left brother
             else // choose the right brother
             {
-                cout << "else // choose the right brother" << endl;
                 if(parent->childs[0] == pNode)
                     brother = parent->childs[1];
                 else
                     brother = parent->childs[index+2];
                 if(brother->count > minmumKey)//// choose the most left key of brother to add to the right hand of the node
                 {
-                    cout << "if(brother->count > minmumKey)//// choose the most left key of brother to add to the right hand of the node" << endl;
                     pNode->keys[pNode->count] = brother->keys[0];
                     pNode->vals[pNode->count] = brother->vals[0];
                     pNode->count ++;
@@ -675,8 +665,6 @@ bool BPlusTree<KeyType>::adjustAfterDelete(Node pNode)
                 }// end add
                 else // merge the node with its brother
                 {
-                    cout << "brother->count:" << brother->count << endl;
-                    cout << "else // merge the node with its brother " << endl;
                     for(int i = 0;i < brother->count;i ++)
                     {
                         pNode->keys[pNode->count+i] = brother->keys[i];
@@ -698,12 +686,10 @@ bool BPlusTree<KeyType>::adjustAfterDelete(Node pNode)
         }// end leaf
         else // branch node
         {
-            cout << "else1  // branch node" << endl;
             size_t index = 0;
             parent->search(pNode->childs[0]->keys[0],index);
             if((parent->childs[0] != pNode) && (index + 1 == parent->count)) // choose the left brother to merge or replace
             {
-                cout << "if(index == parent->count) // choose the left brother to merge or replace" << endl;
                 brother = parent->childs[index];
                 if(brother->count > minmumKey - 1) // choose the most right key and child to add to the left hand of the pnode
                 {
@@ -731,7 +717,6 @@ bool BPlusTree<KeyType>::adjustAfterDelete(Node pNode)
                 }// end add
                 else // merge the node with its brother
                 {
-                    cout << " else // merge the node with its brother"<< endl;
                     //modify the brother and child
                     brother->keys[brother->count] = parent->keys[index];
                     parent->removeAt(index);
@@ -758,7 +743,6 @@ bool BPlusTree<KeyType>::adjustAfterDelete(Node pNode)
             }// end of the left brother
             else // choose the right brother
             {
-                cout << "else // choose the right brother" << endl;
                 if(parent->childs[0] == pNode)
                     brother = parent->childs[1];
                 else
@@ -783,7 +767,6 @@ bool BPlusTree<KeyType>::adjustAfterDelete(Node pNode)
                 }
                 else // merge the node with its brother
                 {
-                    cout << "else // merge the node with its brother" << endl;
                     //modify the pnode and child
                     pNode->keys[pNode->count] = parent->keys[index];
 
@@ -860,7 +843,6 @@ void BPlusTree<KeyType>::readFromDiskAll()
 template <class KeyType>
 void BPlusTree<KeyType>::readFromDisk(blockNode* btmp)
 {
-    cout << "in read from disk" << endl;
     int valueSize = sizeof(offsetNumber);
     char* indexBegin = bm.get_content(*btmp);
     char* valueBegin = indexBegin + keySize;
@@ -870,26 +852,20 @@ void BPlusTree<KeyType>::readFromDisk(blockNode* btmp)
     while(valueBegin - bm.get_content(*btmp) < bm.get_usingSize(*btmp))
     // there are available position in the block
     {
-        cout << "in while" << endl;
         key = *(KeyType*)indexBegin;
         value = *(offsetNumber*)valueBegin;
-        cout << "insert what:" << key << "***************" << "value:" << value << endl;
         insertKey(key, value);
         valueBegin += keySize + valueSize;
         indexBegin += keySize + valueSize;
     }
-    cout << "out read from disk" << endl;
     
 }
 
 template <class KeyType>
 void BPlusTree<KeyType>::writtenbackToDiskAll()
 {
-    cout << "In the written back to disk" << endl;
-    cout << file->fileName << endl;
     blockNode* btmp = bm.getBlockHead(file);
     Node ntmp = leafHead;
-    cout << ntmp << " " << ntmp->count << endl;
     int valueSize = sizeof(offsetNumber);
     while(ntmp != NULL)
     {
@@ -897,8 +873,6 @@ void BPlusTree<KeyType>::writtenbackToDiskAll()
         bm.set_dirty(*btmp);
         for(int i = 0;i < ntmp->count;i ++)
         {
-            cout << "in write" << endl;
-            cout << "write what : " << ntmp->keys[i] << " keysize:" << keySize << " value:" << ntmp->vals[i] << "---------"<<endl;
             char* key = (char*)&(ntmp->keys[i]);
             char* value = (char*)&(ntmp->vals[i]);
             memcpy(bm.get_content(*btmp)+bm.get_usingSize(*btmp),key,keySize);
@@ -917,15 +891,8 @@ void BPlusTree<KeyType>::writtenbackToDiskAll()
         bm.set_usingSize(*btmp, 0);
         bm.set_dirty(*btmp);
         btmp = bm.getNextBlock(file, btmp);
-
     }
-    cout << "Out the written back to disk" << endl;
 
-    
-    fileNode* ftmp = bm.getFile(file->fileName);
-    blockNode* b2 =  bm.getBlockHead(ftmp);
-    char * lim = bm.get_content(*b2);
-    cout << "key " << *((float*)lim) << "value " << *((offsetNumber*)(lim+sizeof(float))) << endl;
 }
 
 //debug

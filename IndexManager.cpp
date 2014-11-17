@@ -20,8 +20,6 @@ IndexManager::IndexManager(API *m_api)
     api->allIndexAddressInfoGet(&allIndexInfo);
     for(vector<IndexInfo>::iterator i = allIndexInfo.begin();i != allIndexInfo.end();i ++)
     {
-        cout << "in constructor" << endl;
-        cout << i->indexName << " " << i->type << endl;
         createIndex(i->indexName, i->type);
     }
 }
@@ -165,7 +163,6 @@ offsetNumber IndexManager::searchIndex(string filePath,string key,int type)
         }
         else
         {
-       //     itString->second->debug_print();
             return itString->second->search(key);
         }
     }
@@ -185,7 +182,6 @@ void IndexManager::insertIndex(string filePath,string key,offsetNumber blockOffs
         }
         else
         {
-            itInt->second->debug_print();
             itInt->second->insertKey(kt.intTmp,blockOffset);
         }
     }
@@ -199,7 +195,6 @@ void IndexManager::insertIndex(string filePath,string key,offsetNumber blockOffs
         }
         else
         {
-            itFloat->second->debug_print();
             itFloat->second->insertKey(kt.floatTmp,blockOffset);
             
         }
@@ -215,7 +210,6 @@ void IndexManager::insertIndex(string filePath,string key,offsetNumber blockOffs
         else
         {
             itString->second->insertKey(key,blockOffset);
-            itString->second->debug_print();
         }
     }
 }
@@ -234,7 +228,6 @@ void IndexManager::deleteIndexByKey(string filePath,string key,int type)
         }
         else
         {
-            itInt->second->debug_print();
             itInt->second->deleteKey(kt.intTmp);
         }
     }
@@ -248,7 +241,6 @@ void IndexManager::deleteIndexByKey(string filePath,string key,int type)
         }
         else
         {
-            itFloat->second->debug_print();
             itFloat->second->deleteKey(kt.floatTmp);
             
         }
@@ -263,7 +255,6 @@ void IndexManager::deleteIndexByKey(string filePath,string key,int type)
         }
         else
         {
-            itString->second->debug_print();
             itString->second->deleteKey(key);
         }
     }

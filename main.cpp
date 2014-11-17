@@ -30,7 +30,7 @@ void print()
     clock_t finish = clock();
     double duration = (double)(finish - start) / CLOCKS_PER_SEC;
     duration *= 1000;
-    printf( "now time is %2.1f milliseconds\n", duration);
+    printf( "now time is %2.1f milliseconds\n", duration * 1000);
 }
 
 clock_t start;
