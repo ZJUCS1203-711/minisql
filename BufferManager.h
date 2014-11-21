@@ -34,6 +34,7 @@ class BufferManager
     public:
         BufferManager();
         ~BufferManager();
+        void delete_fileNode(const char * fileName);
         fileNode* getFile(const char* fileName,bool if_pin = false);
         void set_dirty(blockNode & block);
         void set_pin(blockNode & block,bool pin);

@@ -88,7 +88,7 @@ void IndexManager::dropIndex(string filePath,int type)
         else
         {
             delete itInt->second;
-            indexIntMap .erase(itInt);
+            indexIntMap.erase(itInt);
         }
     }
     else if(type == TYPE_FLOAT)

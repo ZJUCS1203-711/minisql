@@ -37,7 +37,7 @@ int RecordManager::tableCreate(string tableName)
 int RecordManager::tableDrop(string tableName)
 {
     string tableFileName = tableFileNameGet(tableName);
-
+    bm.delete_fileNode(tableFileName.c_str());
     if (remove(tableFileName.c_str()))
     {
         return 0;
@@ -72,7 +72,7 @@ int RecordManager::indexCreate(string indexName)
 int RecordManager::indexDrop(string indexName)
 {
     string indexFileName = indexFileNameGet(indexName);
-    
+    bm.delete_fileNode(indexFileName.c_str());
     if (remove(indexFileName.c_str()))
     {
         return 0;

@@ -349,6 +349,9 @@ template <class KeyType>
 BPlusTree<KeyType>:: ~BPlusTree()
 {
     dropTree(root);
+    keyCount = 0;
+    root = NULL;
+    level = 0;
 }
 
 template <class KeyType>
@@ -415,6 +418,7 @@ template <class KeyType>
 bool BPlusTree<KeyType>::insertKey(KeyType &key,offsetNumber val)
 {
     searchNodeParse snp;
+    if(!root) init_tree();
     findToLeaf(root,key,snp);
     if(snp.ifFound)
     {
