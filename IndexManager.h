@@ -1,6 +1,7 @@
 //
 //  IndexManager.h
 //  Minisql
+//  Description: Provide functions to manage the indexs.
 //
 //  Created by xuyuhao on 14/11/14.
 //  Copyright (c) 2014年 xuyuhao. All rights reserved.
@@ -25,9 +26,10 @@ private:
     typedef map<string,BPlusTree<float> *> floatMap;
 
     int static const TYPE_FLOAT = Attribute::TYPE_FLOAT;
-    int static const TYPE_INT = Attribute::TYPE_INT; // other values mean the size of the char.Eg, 4 means char(4);
+    int static const TYPE_INT = Attribute::TYPE_INT;
+    // other values mean the size of the char.Eg, 4 means char(4);
     
-    API *api;
+    API *api; // to call the functions of API
     
     intMap indexIntMap;
     stringMap indexStringMap;
@@ -36,7 +38,7 @@ private:
         int intTmp;
         float floatTmp;
         string stringTmp;
-    };
+    }; // the struct to help to convert the inputed string to specfied type
     struct keyTmp kt;
     
     int getDegree(int type);

@@ -13,6 +13,12 @@
 #include <vector>
 using namespace std;
 
+
+/**
+ *  Constructor Function: create the existing index by the index files.
+ *
+ *  @param API*
+ */
 IndexManager::IndexManager(API *m_api)
 {
     api = m_api;
@@ -24,6 +30,11 @@ IndexManager::IndexManager(API *m_api)
     }
 }
 
+
+/**
+ *  Destructor Function: write the dirty indexs back to the disk.
+ *
+ */
 IndexManager::~IndexManager()
 {
     //write back to the disk
@@ -53,6 +64,17 @@ IndexManager::~IndexManager()
     }
 }
 
+
+/**
+ * Create index on the specific type.
+ * If there exists the index before, read data from file path and then rebuild the b+ tree.
+ *
+ * @param string the file path
+ * @param int type
+ *
+ * @return void
+ *
+ */
 void IndexManager::createIndex(string filePath,int type)
 {
     int keySize = getKeySize(type);
@@ -75,6 +97,14 @@ void IndexManager::createIndex(string filePath,int type)
     
 }
 
+/**
+ * Drop the specific index.
+ *
+ * @param
+ *
+ * @return void
+ *
+ */
 void IndexManager::dropIndex(string filePath,int type)
 {
     if(type == TYPE_INT)
@@ -122,6 +152,17 @@ void IndexManager::dropIndex(string filePath,int type)
 
 }
 
+/**
+ * Search the b+ tree by the key and return the value of that key.
+ * If the key is not in the index, return -1.
+ *
+ * @param string the file path.
+ * @param string key.
+ * @param int type
+ *
+ * @return void
+ *
+ */
 offsetNumber IndexManager::searchIndex(string filePath,string key,int type)
 {
     setKey(type, key);
@@ -168,6 +209,17 @@ offsetNumber IndexManager::searchIndex(string filePath,string key,int type)
     }
 }
 
+/**
+ * Insert the key and value to the b+ tree.
+ *
+ * @param string the file path
+ * @param string key
+ * @param offsetNumber the block offset number
+ * @param int type
+ *
+ * @return void
+ *
+ */
 void IndexManager::insertIndex(string filePath,string key,offsetNumber blockOffset,int type)
 {
     setKey(type, key);
@@ -214,6 +266,15 @@ void IndexManager::insertIndex(string filePath,string key,offsetNumber blockOffs
     }
 }
 
+/**
+ * Delete the key and its value
+ *
+ * @param string file path
+ * @param int type
+ *
+ * @return void
+ *
+ */
 void IndexManager::deleteIndexByKey(string filePath,string key,int type)
 {
     setKey(type, key);
@@ -260,6 +321,15 @@ void IndexManager::deleteIndexByKey(string filePath,string key,int type)
     }
 }
 
+/**
+ * Get the degree by the type. 
+ * The tree node size equals to the block size.
+ *
+ * @param int type
+ *
+ * @return int the degree
+ *
+ */
 int IndexManager::getDegree(int type)
 {
     int degree = bm.getBlockSize()/(getKeySize(type)+sizeof(offsetNumber));
@@ -267,6 +337,14 @@ int IndexManager::getDegree(int type)
     return degree;
 }
 
+/**
+ * Get the key size by the type
+ *
+ * @param int type
+ *
+ * @return int the key size
+ *
+ */
 int IndexManager::getKeySize(int type)
 {
     if(type == TYPE_FLOAT)
@@ -282,6 +360,16 @@ int IndexManager::getKeySize(int type)
     }
 }
 
+/**
+ * Get the key of its type by the inputed string.
+ * Users input string whatever type the key is.
+ *
+ * @param int type
+ * @param string key
+ *
+ * @return void
+ *
+ */
 void IndexManager::setKey(int type,string key)
 {
     stringstream ss;

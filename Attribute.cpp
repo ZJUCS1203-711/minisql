@@ -5,6 +5,5 @@ Attribute::Attribute(string n, int t, bool i) {
 	type = t;
 	ifUnique = i;
 	index = "";
-	// TODO Auto-generated constructor stub
 
 }

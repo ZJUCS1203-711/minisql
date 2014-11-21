@@ -14,6 +14,13 @@ using namespace std;
 
 //******** The definition of the functions of the class TreeNode **********
 
+/**
+ * Constructor: create the tree node.
+ *
+ * @param int the degreee
+ * @param bool the flag that whether the node is a tree node or not
+ *
+ */
 template <class KeyType>
 TreeNode<KeyType>::TreeNode(int m_degree,bool newLeaf):count(0),parent(NULL),nextLeafNode(NULL),isLeaf(newLeaf),degree(m_degree)
 {
@@ -26,13 +33,22 @@ TreeNode<KeyType>::TreeNode(int m_degree,bool newLeaf):count(0),parent(NULL),nex
     childs.push_back(NULL);
 }
 
+/**
+ * @Deconstructor
+ *
+ */
 template <class KeyType>
 TreeNode<KeyType>::~TreeNode()
 {
     
 }
 
-
+/**
+ * Test if this node is the root or not.
+ *
+ * @return bool the flag that whether this node is the root or not
+ *
+ */
 template <class KeyType>
 bool TreeNode<KeyType>::isRoot()
 {
@@ -40,6 +56,15 @@ bool TreeNode<KeyType>::isRoot()
     else return true;
 }
 
+/**
+ * Search the key in the node
+ *
+ * @param KeyType 
+ * @param size_t return the position of the node by reference
+ *
+ * @return bool the flag that whether the key exists in the node
+ *
+ */
 template <class KeyType>
 bool TreeNode<KeyType>::search(KeyType key,size_t &index)
 {
@@ -100,10 +125,6 @@ bool TreeNode<KeyType>::search(KeyType key,size_t &index)
                 {
                     right = pos;
                 }
-                
-                
-                
-                
             } // end while
             
             // right == left + 1
@@ -135,7 +156,6 @@ bool TreeNode<KeyType>::search(KeyType key,size_t &index)
  * @return TreeNode *
  *
  */
-//TODO: minmumNode只适合奇数度，需要改进
 template <class KeyType>
 TreeNode<KeyType>* TreeNode<KeyType>::splite(KeyType &key)
 {
@@ -149,7 +169,6 @@ TreeNode<KeyType>* TreeNode<KeyType>::splite(KeyType &key)
     
     if(isLeaf) // this is a leaf node
     {
-        //TODO: 这里的下标不知道是不是正确，待验证
         key = keys[minmumNode + 1];
         for(size_t i = minmumNode + 1;i < degree;i ++) // copy the right hand of the keys to the new node
         {
@@ -187,6 +206,14 @@ TreeNode<KeyType>* TreeNode<KeyType>::splite(KeyType &key)
     return newNode;
 }
 
+/**
+ * Add the key in the branch node and return the position added.
+ *
+ * @param KeyType &
+ *
+ * @return size_t the position to insert
+ *
+ */
 template <class KeyType>
 size_t TreeNode<KeyType>::add(KeyType &key)
 {
@@ -221,6 +248,15 @@ size_t TreeNode<KeyType>::add(KeyType &key)
     }
 }
 
+/**
+ * Add the key in the leaf node and return the position added.
+ *
+ * @param Keytype &
+ * @param offsetNumber the value
+ *
+ * @return size_t the position to insert
+ *
+ */
 template <class KeyType>
 size_t TreeNode<KeyType>::add(KeyType &key,offsetNumber val)
 {
@@ -260,6 +296,14 @@ size_t TreeNode<KeyType>::add(KeyType &key,offsetNumber val)
     }
 }
 
+/**
+ * Delete the key-value or key-child by the position.
+ *
+ * @param size_t the position to delete
+ *
+ * @return bool the falg that delation successes or not
+ *
+ */
 template <class KeyType>
 bool TreeNode<KeyType>::removeAt(size_t index)
 {
@@ -297,8 +341,15 @@ bool TreeNode<KeyType>::removeAt(size_t index)
     }
 }
 
-
-//debug
+#ifdef _DEBUG
+/**
+ * For debug, print the whole tree
+ *
+ * @param
+ *
+ * @return void
+ *
+ */
 template <class KeyType>
 void TreeNode<KeyType>::debug_print()
 {
@@ -332,12 +383,19 @@ void TreeNode<KeyType>::debug_print()
     }
     cout << "#############END OF DEBUG IN NODE########"<< endl;
 }
-
+#endif
 
 //******** The definition of the functions of the class BPlusTree **********
 
 
-
+/**
+ * Constructor: init the tree, allocate the memory of the root and then,if users have created the tree before, read from disk and rebuild it.
+ *
+ * @param string m_name
+ * @param int keysize
+ * @param int m_degree
+ *
+ */
 template <class KeyType>
 BPlusTree<KeyType>::BPlusTree(string m_name,int keysize,int m_degree):fileName(m_name),keyCount(0),level(0),nodeCount(0),root(NULL),leafHead(NULL),keySize(keysize),file(NULL),degree(m_degree)
 {
@@ -345,6 +403,10 @@ BPlusTree<KeyType>::BPlusTree(string m_name,int keysize,int m_degree):fileName(m
     readFromDiskAll();
 }
 
+/**
+ * Deconstrucor: free the allocated memory and write back to the disk if required.
+ *
+ */
 template <class KeyType>
 BPlusTree<KeyType>:: ~BPlusTree()
 {
@@ -354,6 +416,12 @@ BPlusTree<KeyType>:: ~BPlusTree()
     level = 0;
 }
 
+/**
+ * Init the tree,allocate memory for the root node.
+ *
+ * @return void
+ *
+ */
 template <class KeyType>
 void BPlusTree<KeyType>::init_tree()
 {
@@ -369,7 +437,7 @@ void BPlusTree<KeyType>::init_tree()
  *
  * @param Node
  * @param KeyType&
- * @param searchNodeParse&
+ * @param searchNodeParse& return the searching information by reference
  *
  * @return
  *
@@ -414,6 +482,15 @@ void BPlusTree<KeyType>::findToLeaf(Node pNode,KeyType key,searchNodeParse & snp
     }
 }
 
+/**
+ * Insert the key in right position.Then, adjust the whole tree for the rules of b+ tree.
+ *
+ * @param KeyType&
+ * @param offsetNumber the value
+ *
+ * @return bool the flag that the insertion successes or not
+ *
+ */
 template <class KeyType>
 bool BPlusTree<KeyType>::insertKey(KeyType &key,offsetNumber val)
 {
@@ -437,6 +514,14 @@ bool BPlusTree<KeyType>::insertKey(KeyType &key,offsetNumber val)
     }
 }
 
+/**
+ * Adjust the node after insertion. Rrecursively call this function itself if the father node contradicts the rules.
+ *
+ * @param Node the pointer pointing to the node
+ *
+ * @return bool the flag
+ *
+ */
 template <class KeyType>
 bool BPlusTree<KeyType>::adjustAfterinsert(Node pNode)
 {
@@ -504,6 +589,14 @@ offsetNumber BPlusTree<KeyType>::search(KeyType& key)
     
 }
 
+/**
+ * Delete the key-value or key-child by the inputed key.Then adjust the whole tree if required.
+ *
+ * @param KeyType&
+ *
+ * @return bool the flag
+ *
+ */
 template <class KeyType>
 bool BPlusTree<KeyType>::deleteKey(KeyType &key)
 {
@@ -536,7 +629,6 @@ bool BPlusTree<KeyType>::deleteKey(KeyType &key)
                     // go to upper level to update the branch level
                     size_t index = 0;
                     
-                    //TODO:在这里degree = 3 时有点问题
                     Node now_parent = snp.pNode->parent;
                     bool if_found_inBranch = now_parent->search(key,index);
                     while(!if_found_inBranch)
@@ -568,6 +660,14 @@ bool BPlusTree<KeyType>::deleteKey(KeyType &key)
     }
 }
 
+/**
+ * Adjust the node after deletion. Rrecursively call this function itself if the father node contradicts the rules.
+ *
+ * @param Node the pointer pointing to the node
+ *
+ * @return bool the flag
+ *
+ */
 template <class KeyType>
 bool BPlusTree<KeyType>::adjustAfterDelete(Node pNode)
 {
@@ -808,6 +908,14 @@ bool BPlusTree<KeyType>::adjustAfterDelete(Node pNode)
     return false;
 }
 
+/**
+ * Drop the tree whose root is the inputed node.
+ *
+ * @param Node the pointer pointing to the node
+ *
+ * @return void
+ *
+ */
 template <class KeyType>
 void BPlusTree<KeyType>::dropTree(Node node)
 {
@@ -825,6 +933,12 @@ void BPlusTree<KeyType>::dropTree(Node node)
     return;
 }
 
+/**
+ * Read the whole existing tree from the disk.
+ *
+ * @return void
+ *
+ */
 template <class KeyType>
 void BPlusTree<KeyType>::readFromDiskAll()
 {
@@ -844,6 +958,14 @@ void BPlusTree<KeyType>::readFromDiskAll()
     
 }
 
+/**
+ * Read a node from the disk.
+ *
+ * @param blockNode*
+ *
+ * @return void
+ *
+ */
 template <class KeyType>
 void BPlusTree<KeyType>::readFromDisk(blockNode* btmp)
 {
@@ -865,6 +987,12 @@ void BPlusTree<KeyType>::readFromDisk(blockNode* btmp)
     
 }
 
+/**
+ * Write the whole tree data to the disk.
+ *
+ * @return void
+ *
+ */
 template <class KeyType>
 void BPlusTree<KeyType>::writtenbackToDiskAll()
 {
@@ -899,7 +1027,8 @@ void BPlusTree<KeyType>::writtenbackToDiskAll()
 
 }
 
-//debug
+#ifdef _DEBUG
+
 template <class KeyType>
 void BPlusTree<KeyType>::debug_print()
 {
@@ -912,6 +1041,7 @@ void BPlusTree<KeyType>::debug_print()
     
 }
 
+
 template <class KeyType>
 void BPlusTree<KeyType>::debug_print_node(Node pNode)
 {
@@ -921,6 +1051,7 @@ void BPlusTree<KeyType>::debug_print_node(Node pNode)
             debug_print_node(pNode->childs[i]);
     
 }
+#endif
 
 
 
