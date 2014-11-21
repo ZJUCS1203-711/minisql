@@ -112,52 +112,5 @@ int main(int argc,char * argv[])
     }
     
     return 0;
-
-    
-    
-    
-//        api.tableDrop("nyle");
-//
-//    
-//    vector<Attribute> attributeVector;
-//    Attribute a1("v1", Attribute::TYPE_INT, false);
-//    attributeVector.insert(attributeVector.end(), a1);
-//    
-//    Attribute a2("v2", Attribute::TYPE_FLOAT, false);
-//    attributeVector.insert(attributeVector.end(), a2);
-//
-//    api.tableCreate("dd", &attributeVector, "", 0);
-    
-//    api.indexCreate("index1", "nyle", "nyle2");
-//
-//    vector<string> content;
-//    content.insert(content.end(), "11");
-//    content.insert(content.end(), "2.22");
-//
-//    api.recordInsert("dd", &content);
-//
-    
-//    char t[2000];
-//    memset(t, 0, 2000);
-//    cm.recordStringGet("nyle", &content, t);
-//    cout << content[0] << " " << content[1] << " " << content[2] << endl;
-//    
-//    cout << *((int*)t) << " " << *((float*)(t + 4)) << " " << *((float*)(t + 8));
-    
-//    rm.recordInsert("nyle", t, 12);
-//    
-//    vector<Condition> conditions;
-//    Condition c("nyle2", "2.3", Condition::OPERATOR_EQUAL);
-//    conditions.insert(conditions.begin(), c);
-////
-////
-//    api.recordDelete("nyle", &conditions);
-//
-//    
-//    api.recordShow("nyle", NULL);
-////
-////    cout << "blockOffset : " << im.searchIndex(rm.indexFileNameGet("index1"), "444", Attribute::TYPE_FLOAT);
-//    
-//    return 1;
 }
 
