@@ -18,7 +18,6 @@ void init()
     fp = fopen("Indexs", "r");
     if (fp == NULL)
     {
-        fclose(fp);
         fopen("Indexs", "w+");
         return;
     }

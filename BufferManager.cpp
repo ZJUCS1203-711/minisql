@@ -10,6 +10,7 @@
 #include "Minisql.h"
 #include <stdlib.h>
 #include <string>
+#include <cstring>
 #include <queue>
 
 /**

@@ -10,6 +10,8 @@
 #define __Minisql__TreeNode__Imp
 
 #include <iostream>
+#include <stdlib.h>
+#include <cstring>
 using namespace std;
 
 //******** The definition of the functions of the class TreeNode **********
