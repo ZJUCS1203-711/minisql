@@ -160,14 +160,14 @@ void API::indexCreate(string indexName, string tableName, string attributeName)
  */
 void API::tableCreate(string tableName, vector<Attribute>* attributeVector, string primaryKeyName,int primaryKeyLocation)
 {
-    if(cm->findTable(tableName) == TABLE_FILE)
+    if (cm->findTable(tableName) == TABLE_FILE)
     {
         cout << "There is a table " << tableName << " already" << endl;
         return;
     }
     
     //RecordManager to create a table file
-    if(rm->tableCreate(tableName))
+    if (rm->tableCreate(tableName))
     {
         //CatalogManager to create a table information
         cm->addTable(tableName, attributeVector, primaryKeyName, primaryKeyLocation);
@@ -397,11 +397,11 @@ void API::recordDelete(string tableName, vector<Condition>* conditionVector)
         {
             if ((*conditionVector)[j].operate == Condition::OPERATOR_EQUAL)
             {
-                for (Attribute attribute : attributeVector)
+                for (int k = 0; k < attributeVector.size(); k++)
                 {
-                    if (attribute.index != "" && attribute.name == (*conditionVector)[j].attributeName)
+                    if (attributeVector[k].index != "" && attributeVector[k].name == (*conditionVector)[j].attributeName)
                     {
-                        blockOffset = im->searchIndex(rm->indexFileNameGet(attribute.index), (*conditionVector)[j].value, attribute.type);
+                        blockOffset = im->searchIndex(rm->indexFileNameGet(attributeVector[k].index), (*conditionVector)[j].value, attributeVector[k].type);
                     }
                 }
             }
