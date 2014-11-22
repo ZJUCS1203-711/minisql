@@ -519,12 +519,12 @@ bool RecordManager::recordConditionFit(char* recordBegin,int recordSize, vector<
         //init content (when content is string , we can get a string easily)
         memset(content, 0, 255);
         memcpy(content, contentBegin, typeSize);
-        for(Condition condition : *conditionVector)
+        for(int j = 0; j < (*conditionVector).size(); j++)
         {
-            if (condition.attributeName == attributeName)
+            if ((*conditionVector)[j].attributeName == attributeName)
             {
                 //if this attribute need to deal about the condition
-                if(!contentConditionFit(content, type, &condition))
+                if(!contentConditionFit(content, type, &(*conditionVector)[j]))
                 {
                     //if this record is not fit the conditon
                     return false;
@@ -563,9 +563,9 @@ void RecordManager::recordPrint(char* recordBegin, int recordSize, vector<Attrib
         
         memcpy(content, contentBegin, typeSize);
 
-        for(string name : *attributeNameVector)
+        for(int j = 0; j < (*attributeNameVector).size(); j++)
         {
-            if (name == (*attributeVector)[i].name)
+            if ((*attributeNameVector)[j] == (*attributeVector)[i].name)
             {
                 contentPrint(content, type);
                 break;

@@ -160,14 +160,6 @@ void API::indexCreate(string indexName, string tableName, string attributeName)
  */
 void API::tableCreate(string tableName, vector<Attribute>* attributeVector, string primaryKeyName,int primaryKeyLocation)
 {
-//    cout << "=======api::tablecreate=======" << endl
-//    << "tableName: " << tableName << "; primaryKeyName: " << primaryKeyName << "; location: " << primaryKeyLocation << endl;
-//    for (int i = 0; i < (* attributeVector).size(); i++)
-//    {
-//        (* attributeVector)[i].print();
-//    }
-    
-    
     if(cm->findTable(tableName) == TABLE_FILE)
     {
         cout << "There is a table " << tableName << " already" << endl;
@@ -220,9 +212,9 @@ void API::recordShow(string tableName, vector<string>* attributeNameVector, vect
         
         vector<string> allAttributeName;
         if (attributeNameVector == NULL) {
-            for (Attribute attribute : attributeVector)
+            for (int i = 0; i < attributeVector.size(); i++)
             {
-                allAttributeName.insert(allAttributeName.end(), attribute.name);
+                allAttributeName.insert(allAttributeName.end(), attributeVector[i].name);
             }
             
             attributeNameVector = &allAttributeName;
@@ -231,12 +223,12 @@ void API::recordShow(string tableName, vector<string>* attributeNameVector, vect
         //print attribute name you want to show
         tableAttributePrint(attributeNameVector);
         
-        for (string name : (*attributeNameVector))
+        for (int j = 0; j < (*attributeNameVector).size(); j++)
         {
             int i = 0;
             for (i = 0; i < attributeVector.size(); i++)
             {
-                if (attributeVector[i].name == name)
+                if (attributeVector[i].name == (*attributeNameVector)[j])
                 {
                     break;
                 }
@@ -252,16 +244,16 @@ void API::recordShow(string tableName, vector<string>* attributeNameVector, vect
         int blockOffset = -1;
         if (conditionVector != NULL)
         {
-            for (Condition condition : *conditionVector)
+            for (int j = 0; j < (*conditionVector).size(); j++)
             {
                 int i = 0;
                 for (i = 0; i < attributeVector.size(); i++)
                 {
-                    if (attributeVector[i].name == condition.attributeName)
+                    if (attributeVector[i].name == (*conditionVector)[j].attributeName)
                     {
-                        if (condition.operate == Condition::OPERATOR_EQUAL && attributeVector[i].index != "")
+                        if ((*conditionVector)[j].operate == Condition::OPERATOR_EQUAL && attributeVector[i].index != "")
                         {
-                                blockOffset = im->searchIndex(rm->indexFileNameGet(attributeVector[i].index), condition.value, attributeVector[i].type);
+                                blockOffset = im->searchIndex(rm->indexFileNameGet(attributeVector[i].index), (*conditionVector)[j].value, attributeVector[i].type);
                         }
                         break;
                     }
@@ -401,15 +393,15 @@ void API::recordDelete(string tableName, vector<Condition>* conditionVector)
     int blockOffset = -1;
     if (conditionVector != NULL)
     {
-        for (Condition condition : *conditionVector)
+        for (int j = 0; j < (*conditionVector).size(); j++)
         {
-            if (condition.operate == Condition::OPERATOR_EQUAL)
+            if ((*conditionVector)[j].operate == Condition::OPERATOR_EQUAL)
             {
                 for (Attribute attribute : attributeVector)
                 {
-                    if (attribute.index != "" && attribute.name == condition.attributeName)
+                    if (attribute.index != "" && attribute.name == (*conditionVector)[j].attributeName)
                     {
-                        blockOffset = im->searchIndex(rm->indexFileNameGet(attribute.index), condition.value, attribute.type);
+                        blockOffset = im->searchIndex(rm->indexFileNameGet(attribute.index), (*conditionVector)[j].value, attribute.type);
                     }
                 }
             }
