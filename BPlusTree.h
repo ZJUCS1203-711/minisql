@@ -1,6 +1,7 @@
 //
 //  BPlusTree.h
 //  Minisql
+//  Description: The basic b+ tree implement of template.
 //
 //  Created by xuyuhao on 14/11/8.
 //  Copyright (c) 2014年 xuyuhao. All rights reserved.
@@ -15,45 +16,43 @@
 #include <string>
 using namespace std;
 
-
 static BufferManager bm;
 //**********************TreeNode***************************//
-typedef int offsetNumber;
+typedef int offsetNumber; // the value of the tree node
 
 template <typename KeyType>
 class TreeNode{
 public:
-    size_t count; // the count of keys
+    size_t count;  // the count of keys
     TreeNode* parent;
-    std::vector <KeyType> keys;
+    vector <KeyType> keys;
+    vector <TreeNode*> childs;
+    vector <offsetNumber> vals;
     
-    std::vector <TreeNode*> childs;
-    std::vector <offsetNumber> vals;
+    TreeNode* nextLeafNode; // point to the next leaf node
     
-    TreeNode* nextLeafNode; //指向下一个叶子节点
-    
-    bool isLeaf; //是否叶子标识
+    bool isLeaf; // the flag whether this node is a leaf node
     
 private:
     int degree;
     
 public:
-    //创建新节点，参数为false表示创建枝干节点，否则为叶子节点
+    //create a new node. if the newLeaf = false, create a branch node.Otherwise, create a leaf node
     TreeNode(int degree,bool newLeaf=false);
     ~TreeNode();
-    //friend class BPlusTree<KeyType>
     
 public:
     bool isRoot();
-    bool search(KeyType key,size_t &index);//查找一个key，返回对应的索引值
-    TreeNode* splite(KeyType &key); //分裂节点
-    size_t add(KeyType &key); //在枝干插入一个key,返回对应的索引值
-    size_t add(KeyType &key,offsetNumber val); //在叶子节点插入一个key,返回对应的索引值
+    bool search(KeyType key,size_t &index);//search a key and return by the reference of a parameter
+    TreeNode* splite(KeyType &key);
+    size_t add(KeyType &key); //add the key in the branch and return the position
+    size_t add(KeyType &key,offsetNumber val); // add a key-value in the leaf node and return the position
     bool removeAt(size_t index);
 
+#ifdef _DEBUG
 public:
     void debug_print();
-
+#endif
 };
 
 
@@ -65,23 +64,23 @@ class BPlusTree
 private:
     typedef TreeNode<KeyType>* Node;
 
+    // a struct helping to find the node containing a specific key
     struct searchNodeParse
     {
-        Node pNode; //找到节点的指针
-        size_t index; // 节点关键字序号
-        bool ifFound; // 是否找到
-        
+        Node pNode; // a pointer pointering to the node containing the key
+        size_t index; // the position of the key
+        bool ifFound; // the flag that whether the key is found.
     };
 private:
     string fileName;
     Node root;
-    Node leafHead; //叶子指针起点
-    size_t keyCount; //key数量
-    size_t level; //层数
-    size_t nodeCount; //节点数
+    Node leafHead; // the head of the leaf node
+    size_t keyCount;
+    size_t level;
+    size_t nodeCount;
     fileNode* file; // the filenode of this tree
     int keySize; // the size of key
-    int degree; // the degree of the tree
+    int degree;
     
 public:
     BPlusTree(string m_name,int keySize,int degree);
@@ -98,18 +97,18 @@ public:
     void readFromDisk(blockNode* btmp);
 
 private:
-    void init_tree();//初始化树
+    void init_tree();// init the tree
     bool adjustAfterinsert(Node pNode);
     bool adjustAfterDelete(Node pNode);
-    //void deleteNode(Node pNode);
     void findToLeaf(Node pNode,KeyType key,searchNodeParse &snp);
     
 //DEBUG
+#ifdef _DEBUG
 public:
     void debug_print();
 
     void debug_print_node(Node pNode);
-
+#endif
 
 };
 

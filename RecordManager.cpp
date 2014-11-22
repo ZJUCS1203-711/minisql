@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include "RecordManager.h"
+#include <cstring>
 #include "API.h"
 
 /**

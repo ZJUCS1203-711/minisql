@@ -10,6 +10,7 @@
 #include "Minisql.h"
 #include <stdlib.h>
 #include <string>
+#include <cstring>
 #include <queue>
 
 /**
@@ -439,7 +440,6 @@ blockNode* BufferManager::getBlockHead(fileNode* file)
  *
  */
 blockNode* BufferManager::getBlockByOffset(fileNode* file, int offsetNumber)
-//TODO: 改为直接fseek寻找的方式效率更高
 {
     blockNode* btmp = NULL;
     if(offsetNumber == 0) return getBlockHead(file);

@@ -6,6 +6,7 @@
 #include "Minisql.h"
 #include "IndexInfo.h"
 #include <string>
+#include <cstring>
 #include <vector>
 #include <stdio.h>
 

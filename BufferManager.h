@@ -1,6 +1,7 @@
 //
 //  BufferManager.h
 //  Minisql
+//  Description: Provide funtions to manage the buffers.
 //
 //  Created by xuyuhao on 14/11/1.  
 //  Copyright (c) 2014年 xuyuhao. All rights reserved.
