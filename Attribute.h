@@ -16,10 +16,10 @@ using namespace std;
 class Attribute
 {
 public:
-    char[20] name;               //属性名称
+    string name;               //属性名称
     int type;                  //属性类别  (-1 为 float, 0 为 int, 其他正整数表示 char，数值为char的个数)
     bool ifUnique;             //属性是否唯一
-    char[20] index;         //索引名称 ,默认（不存在时）为""
+    string index;         //索引名称 ,默认（不存在时）为""
     Attribute(string n, int t, bool i);
     
 public:

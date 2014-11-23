@@ -1,7 +1,7 @@
 #include "Attribute.h"
 
 Attribute::Attribute(string n, int t, bool i) {
-	name = n.c_str();
+	name = n;
 	type = t;
 	ifUnique = i;
 	index = "";
